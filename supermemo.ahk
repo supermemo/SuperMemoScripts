@@ -4,6 +4,7 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 
 #Include Gdip_All.ahk
 
+OnExit("ExitFunc")
 
 
 ; Configuration
@@ -34,12 +35,21 @@ global SCSetHook := "{Alt down}c{F10}cey{Alt up}"
 ; Globals
 global ClipboardBak := ""
 global GdiGarbageCollector := 0
-global GdiToken :=
+global GdiToken := CreateGdiToken()
 
 
 
 ; Other constants
 global TimeFractionRatio := 1000 / 3600
+
+
+
+; 
+
+ExitFunc()
+{
+  Gdip_Shutdown(pToken)
+}
 
 
 
@@ -88,65 +98,31 @@ RERElement(element, paramName, paramValue, rLimit = 1)
 
 ; Image-related
 
-EnsureGdiToken()
+CreateGdiToken()
 {
-  if (!IsObject(GdiToken))
-  {
-    GdiToken := Gdip_Startup()
+  pToken := Gdip_Startup()
     
-    if (!GdiToken)
-    {
-      ShowWarning("Gdiplus failed to start. Please ensure you have Gdiplus on your system")
-      return false
-    }
+  if (!pToken)
+  {
+    ShowWarning("Gdiplus failed to start. Please ensure you have Gdiplus on your system")
+    ExitApp
   }
   
-  GdiGarbageCollector++
-    
-  return true
-}
-
-DisposeGdiToken()
-{
-  if (GdiGarbageCollector == 1)
-  {
-    if (!GdiToken)
-      ShowWarning("GdiToken wasn't Garbage Collected, but its reference is null")
-      
-    else
-      Gdip_Shutdown(GdiToken)
-    
-    GdiToken :=
-    GdiGarbageCollector = 0
-  }
-  
-  else if (GdiGarbageCollector > 1)
-    GdiGarbageCollector--
-    
-  else
-    ShowWarning("Trying to Garbage Collect GdiToken with a count of 0")
+  return pToken
 }
 
 GetImageSize(filePath, ByRef width, ByRef height)
 {
-  if (!EnsureGdiToken())
-    return false
-  
   bitmap := Gdip_CreateBitmapFromFile(filePath)
   width := Gdip_GetImageWidth(bitmap)
   height := Gdip_GetImageHeight(bitmap)
   Gdip_DisposeImage(bitmap)
-  
-  DisposeGdiToken()
   
   return true
 }
 
 CreateTransparentImage(filePath, width, height)
 {
-  if (!EnsureGdiToken())
-    return false
-  
   bitmap := Gdip_CreateBitmap(width, height)
   graphics := Gdip_GraphicsFromImage(bitmap)
   
@@ -158,8 +134,6 @@ CreateTransparentImage(filePath, width, height)
   
   Gdip_DisposeImage(bitmap)
   Gdip_DeleteGraphics(graphics)
-  
-  DisposeGdiToken()
   
   return success
 }
@@ -393,17 +367,12 @@ OcclusionCreateSMItem(parentElement, parentId, parentTitle, parentImageName, par
 
 OcclusionCreate(parentElement, parentId, parentTitle, parentImageName, parentImageFile)
 {
-  if (!EnsureGdiToken())
-    return false
-    
   occlusionImageName := Format(OcclusionImageNamePattern, parentImageName, A_TickCount)
   occlusionImageFile := GetTempFileName("png")
   
   success := GetImageSize(parentImageFile, width, height)
   success := success && CreateTransparentImage(occlusionImageFile, width, height)
   success := success && OcclusionCreateSMItem(parentElement, parentId, parentTitle, parentImageName, parentImageFile, occlusionImageName, occlusionImageFile)
-  
-  DisposeGdiToken()
   
   return success
 }
