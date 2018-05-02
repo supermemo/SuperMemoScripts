@@ -3,17 +3,17 @@ Scripts compilation repository for SuperMemo users
 
 ## SuperMemo Assistant (Legacy)
 ### Downloads
-[SuperMemoAssistant Executable (compiled script)](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1a/SuperMemoAssistant_legacy-v0.1a.exe)
+[SuperMemoAssistant Executable (compiled script)](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1b/SuperMemoAssistant_legacy-v0.1b.exe)
 
 [SuperMemoAssistant Script (.ahk script)](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/supermemo.ahk)
 
 ### Shortcuts
 
-* **Create Image Occlusion**: `Ctrl+Win+o`
-* **Edit Image Occlusion**: `Ctrl+Win+e`
+* **Create Occlusion**: `Ctrl+Win+o`
+* **Edit Occlusion**: `Ctrl+Win+e`
 * **Focus Content Window**: `Ctrl+Alt+c`
 * **Compress Image**: `Ctrl+Win+c`
-* **Set Hook**: `Ctrl+Win+&`
+* **Set Hook**: `Ctrl+Win+h`
 
 ### Configuration
 At the head of the .ahk script
