@@ -16,7 +16,8 @@ global OcclusionImageNamePattern := "__Occlusion: {1} {2}"    ; {1} Original ima
 ; RegEx
 ; REC: RegEx Capture
 ; RER: RegEx Replace
-global REC_Occlusion_Element := "UOsm)^Begin Element #(?P<Id>[\d]+).*^Title=(?P<Title>[^\n\r]+)$.*^ImageName=(?P<ImageName>[^\n\r]+)$[\r\n]+^ImageFile=(?P<ImageFile>[^\n\r]+)$"
+global REC_Occlusion_Generic_Element := "UOsm)^Begin Element #(?P<Id>[\d]+).*^Title=(?P<Title>[^\n\r]+)$.*^ImageName=(?P<ImageName>[^\n\r]+)$[\r\n]+^ImageFile=(?P<ImageFile>[^\n\r]+)$"
+global REC_Occlusion_Self_Element := "Osm).*^ImageFile=(?P<BackgroundImageFile>[^\n\r]+)$.*^ImageFile=(?P<OcclusionImageFile>[^\n\r]+)$"
 global RER_Element_Generic := "=[^\n\r]+"
 global RER_Element_ComponentsAndRepHistory := "sm)^Begin Component #.*End RepHist #[\d]+$"
 
@@ -284,9 +285,16 @@ SetHook()
 
 OcclusionParseParentElement(element)
 {
-  RegExMatch(element, REC_Occlusion_Element, outMatch)
+  RegExMatch(element, REC_Occlusion_Generic_Element, outMatch)
 
   return outMatch.Count() == 4 ? outMatch : false
+}
+
+OcclusionParseSelfElement(element)
+{
+  RegExMatch(element, REC_Occlusion_Self_Element, outMatch)
+
+  return outMatch.Count() == 2 ? outMatch : false
 }
 
 OcclusionParseOcclusionFile(element)
@@ -413,6 +421,11 @@ OcclusionCreateAndEdit(parentElement, parentId, parentTitle, parentImageName, pa
   return true
 }
 
+OcclusionEdit(backgroundImageFile, occlusionImageFile)
+{
+  Run, %ImageEditorBin% %backgroundImageFile% %occlusionImageFile%
+}
+
 
 
 ; Macros
@@ -435,12 +448,41 @@ OcclusionCreateAndEdit(parentElement, parentId, parentTitle, parentImageName, pa
   {
     ShowWarning("Element information could not be parsed.")
     
-    elemMatch :=
+    parentElement :=
     
     return
   }
   
   OcclusionCreateAndEdit(parentElement, elemMatch.Id, elemMatch.Title, elemMatch.ImageName, elemMatch.ImageFile)
+
+  elemMatch :=
+  parentElement :=
+    
+  ClipboardRestore()
+Return
+
+
+; Edit Image Occlusion From Displayed Element (Ctrl+Win+e)
+#^e::
+  ClipboardSave()
+  
+  parentElement := CopyElement()
+  
+  if (!parentElement)
+    return
+    
+  elemMatch := OcclusionParseSelfElement(parentElement)
+  
+  if (!elemMatch)
+  {
+    ShowWarning("Element information could not be parsed.")
+    
+    parentElement :=
+    
+    return
+  }
+  
+  OcclusionEdit(elemMatch.BackgroundImageFile, elemMatch.OcclusionImageFile)
 
   elemMatch :=
   parentElement :=
@@ -461,8 +503,8 @@ Return
 Return  
 
 
-; Set Hook (Ctrl+Win+&)
-#^&::
+; Set Hook (Ctrl+Win+h)
+#^h::
   SetHook()
 Return
 
