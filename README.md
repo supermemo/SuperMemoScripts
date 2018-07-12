@@ -5,7 +5,7 @@ This software works in tandem with Image Occlusion Editor, found [on this same G
 
 ## SuperMemo Assistant (Legacy)
 ### Downloads
-[SuperMemoAssistant Executable (compiled script)](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1c/SuperMemoAssistant_legacy-v0.1c.exe)
+[SuperMemoAssistant Executable (compiled script)](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1d/SuperMemoAssistant_legacy-v0.1d.exe)
 
 [SuperMemoAssistant Script (.ahk script)](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/supermemo.ahk)
 
