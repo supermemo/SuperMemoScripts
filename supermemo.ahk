@@ -385,7 +385,7 @@ OcclusionCreateAndEdit(parentElement, parentId, parentTitle, parentImageName, pa
   newElement := CopyElement()
   occlusionImageFile := OcclusionParseOcclusionFile(newElement)
   
-  Run, %ImageEditorBin% %parentImageFile% %occlusionImageFile%
+  Run, %ImageEditorBin% "%parentImageFile%" "%occlusionImageFile%"
   
   return true
 }
@@ -473,7 +473,7 @@ Return
 
 
 ; Set Hook (Ctrl+Win+h)
-#^h::
+#^&::
   SetHook()
 Return
 
