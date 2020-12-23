@@ -1,29 +1,16 @@
 # SuperMemoScripts
-Scripts compilation repository for SuperMemo users
 
-This software works in tandem with Image Occlusion Editor, found [on this same GitHub profile](https://github.com/supermemo/ImageOcclusionEditor)
+Script repository for [SuperMemo](www.supermemo.wiki).
 
-## SuperMemo Assistant (Legacy)
-### Downloads
-[SuperMemoAssistant Executable (compiled script)](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1d/SuperMemoAssistant_legacy-v0.1d.exe)
+## Scripts
 
-[SuperMemoAssistant Script (.ahk script)](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/supermemo.ahk)
+- [Image Occlusion Editor](ImageOcclusionEditor/): Alternative image occlusion editor for SuperMemo 17+.
+- [Git sync](SuperMemo-Git-sync/): Automatically synchronize with Git when running SuperMemo.
 
-### Shortcuts
+## Submitting your scripts
 
-* **Create Occlusion**: `Ctrl+Win+o`
-* **Edit Occlusion**: `Ctrl+Win+e`
-* **Focus Content Window**: `Ctrl+Alt+c`
-* **Compress Image**: `Ctrl+Win+c`
-* **Set Hook**: `Ctrl+Win+h`
+**Anyone** can submit their own script to this repository.
 
-### Configuration
-At the head of the .ahk script
-```
-global ImageEditorBin := "C:\Program Files (x86)\ImageOcclusionEditor\ImageOcclusionEditor.exe"
-global OcclusionItemNamePattern := "[Occlusion]: {1}"         ; {1} Parent name
-global OcclusionImageNamePattern := "__Occlusion: {1} {2}"    ; {1} Original image name {2} TimeStamp
-```
-
-## Demonstration video
-[![Image Occlusion Editor Demonstration](https://img.youtube.com/vi/BJ1ZAYSGJ4M/0.jpg)](https://youtu.be/BJ1ZAYSGJ4M)
+1. Fork this repository,
+2. Push changes to your fork,
+3. Send a Pull Request.
