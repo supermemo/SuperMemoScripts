@@ -6,11 +6,11 @@ Compilation of scripts for [SuperMemo](www.supermemo.wiki), submitted by users o
 - [Scripts](#scripts) (download)
 - [Submitting your scripts](#submitting-your-scripts)
 
-## Disclaimer
+### Disclaimer
 
-Scripts published on this repository have received *cursory* verification by [Alexis](https://github.com/alexis-) (author of SMA). This doesn't include any certification of quality: be mindful that some of these softwares might contain bugs or be harmful.
-
-**Use these scripts at your own risk**.
+> Scripts published on this repository have received *cursory* verification by [Alexis](https://github.com/alexis-) (author of SMA). This doesn't include any certification of quality: be mindful that some of these software might contain bugs or be harmful.
+> 
+> **Use these scripts at your own risk**.
 
 ## Scripts
 
@@ -34,7 +34,7 @@ Include the following elements when submitting your script:
 
 ### Procedure
 
-⚠ Make sure to **follow the instructions above** before proceeding.
+> Make sure to **follow the instructions above** before proceeding.
 
 1. Fork this repository,
 2. Push changes to your fork,
