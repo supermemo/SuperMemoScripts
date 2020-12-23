@@ -1,7 +1,7 @@
 # SuperMemo-Git-sync
 A bat script to automatically sync your SuperMemo collection (across multiple devices)
 
-**NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in https://supermemo.wiki/sma/#/qs-backup-setup?id=internet-backups-git-amp-github
+**NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in https://www.supermemo.wiki/supermemo/backup-guide
 
 Upon launching, this script will:
 1. Get the latest copy of your SM collection from git
