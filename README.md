@@ -2,6 +2,10 @@
 
 Compilation of scripts for [SuperMemo](www.supermemo.wiki), submitted by users of the community.
 
+- [Disclaimer](#disclaimer)
+- [Scripts](#scripts) (download)
+- [Submitting your scripts](#submitting-your-scripts)
+
 ## Disclaimer
 
 Scripts published on this repository have received *cursory* verification by [Alexis](https://github.com/alexis-) (author of SMA). This doesn't include any certification of quality: be mindful that some of these softwares might contain bugs or be harmful.
