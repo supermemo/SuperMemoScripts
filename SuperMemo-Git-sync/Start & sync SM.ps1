@@ -1,4 +1,5 @@
-# Script for running and syncing SM using a git backup, as per https://www.supermemo.wiki/en/supermemo/backup-guide#internet-backups-git
+# PowerShell script for running and syncing SM https://github.com/supermemo/SuperMemoScripts
+# To be used with a git backup, as per https://www.supermemo.wiki/en/supermemo/backup-guide#internet-backups-git
 # To run, put this script into your SM collection folder (the one with the .KNO file), right click the script and
 # Sent to > Desktop. Then, right click the newly created shortcut and select Properties.
 # Depending whether you use SM or SMA, put the respective string below (replacing the correct path) in the Target field (ignoring the #) and press OK
