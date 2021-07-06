@@ -21,7 +21,7 @@ Upon launching, this script will:
 # Setup
 1. Download `Start & sync SM.ps1`
 2. Place the script in your git folder together with your SM collection
-3. Right click on the .ps1 script and click `Send to > Desktop`
+3. Right click on the .ps1 script and click `Send to` > `Desktop`
 4. On your desktop, Right click on the newly created shortcut and click `Properties`
 5. In the `Target` field, put the respective string from the options below, depending on what you use (this info is also available at the start of the script itself)
 - SM
@@ -55,7 +55,7 @@ When you launch SM (via this script) and close it without performing any actions
 If you've accidentally did a `cl` where you didn't intend to, you can get your changes back by opening _git bash_ in your knowledge folder and typing `git stash pop`. Previous versions are recoverable too, see: https://git-scm.com/docs/git-stash
 
 ## Controlling what is synced by this script
-Every time you close SuperMemo, `gitAddFiles` function is called, which will sync the collection with git. Out of the box, it does `git add -A *`, where `*` stands for all files in the folder. This means that every time you close SuperMemo, all files in the collection will be saved. This configuration will work for the majority of people.
+Every time you close SuperMemo, `Add-GitFiles` function is called, which will sync the collection with git. Out of the box, it does `git add -A *`, where `*` stands for all files in the folder. This means that every time you close SuperMemo, all files in the collection will be saved. This configuration will work for the majority of people.
 
 This can be changed, if desired. E.g. if you store additional information in the same git repo, but only choose to save SuperMemo related files when your close SuperMemo. To do so, see https://git-scm.com/docs/git-add
 
