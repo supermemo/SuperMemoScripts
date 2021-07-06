@@ -5,7 +5,7 @@ A PowerShell script to seamlessly backup and sync your SuperMemo collection (acr
 
 # Features
 - Seamless experience. Run the script instead of the SM shortcut and it will sync your collection in the background
-- Support for both vanilla SM and SMA
+- Support for both vanilla SM and [SMA](https://sma.supermemo.wiki/)
 - Sync your collection across any number of devices, as long as your only run SM on 1 PC at a time
 - The script runs in the background unless your input is required. No need to stop to ensure your git collection is still OK every time you run SM
 - You're in control. If you're experimenting with your collection and decide you don't want to sync your changes, close the script and manually decide if you want to save / discard them
@@ -21,16 +21,16 @@ Upon launching, this script will:
 # Setup
 1. Download `Start & sync SM.ps1`
 2. Place the script in your git folder together with your SM collection
-3. Right click on the .ps1 script and click Send to > Desktop
-4. On your desktop, Right click on the newly created shortcut and click Properties
-5. In the Target field, put the respective string from the options below, depending on what you use (this info is also available at the start of the script itself)
+3. Right click on the .ps1 script and click `Send to > Desktop`
+4. On your desktop, Right click on the newly created shortcut and click `Properties`
+5. In the `Target` field, put the respective string from the options below, depending on what you use (this info is also available at the start of the script itself)
 - SM
-	- C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"
+	- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`
 - SMA
-	- C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe"
+	- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe"`
 - SMA with a default collection
-	- C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"'"
-6. Press OK on the Properties window
+	- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"'"`
+6. Press `OK` on the Properties window
 7. Optional: if you were using a shortcut to run SM, you can delete it
 
 # How to use
