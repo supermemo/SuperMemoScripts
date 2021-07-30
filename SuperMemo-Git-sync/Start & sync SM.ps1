@@ -7,11 +7,22 @@
 # SM
 # C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"
 
+# SM + Pro mode
+# C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe --pro"
+
+
 # SMA
 # C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe"
 
+# SMA + Pro mode
+# C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --pro"
+
+
 # SMA with a default collection
 # C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"'"
+
+# SMA with a default collection + Pro mode
+# C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"' --pro"
 
 function Add-GitFiles {
     git add -A *
@@ -42,23 +53,27 @@ function Remove-UselessFiles {
     }
 }
 
-$gitPullErrors = $false
-"git pull"
-$pullOutput = cmd /c git pull
-$pullOutput = $pullOutput -split "`r`n" # split by newline in case the output is multiline
-if ($pullOutput[0] -ne "Already up to date." -and $pullOutput[1] -ne "Fast-forward") {
-    $pullOutput
-    $gitPullErrors = $true
+if ($args[$args.Count - 1] -eq "--pro") {
+    $proMode = $true
+    $args[$args.Count - 1] = $null;
 }
 
+"git pull"
+git pull
+$pullCode = $LASTEXITCODE
+
 "git status"
-$statusOutput = cmd /c git status
-if ($statusOutput[3] -ne "nothing to commit, working tree clean" -or $gitPullErrors) {
+$statusOutput = cmd /c git status --porcelain=v1
+if ($null -ne $statusOutput -or $pullCode) {
     $statusOutput
-    "`r`nNon standard git output, double check above"
-    $userInput = Read-Host -Prompt "Type cl if you want to clear any unsaved changes(backup will be stashed)"
-    if ($userInput -eq "cl") {
-        Clear-CurrentFolder
+    "`r`nNon standard git output - double check above"
+    if ($proMode) {
+        $userInput = Read-Host -Prompt "Type cl if you want to clear any unsaved changes(backup will be stashed)"
+        if ($userInput -eq "cl") {
+            Clear-CurrentFolder
+        }
+    } else {
+        Read-Host -Prompt "Press Enter to continue"
     }
 } else {
     "All OK - proceeding"
@@ -68,25 +83,21 @@ if ($statusOutput[3] -ne "nothing to commit, working tree clean" -or $gitPullErr
 & $args[0] $args[1] | Out-Null # start SM from provided path (&) and wait for it to close (Out-Null)
 "Closed SM"
 
-Remove-UselessFiles
+if ($proMode) {
+    Remove-UselessFiles
+}
 
+"Proceeding to commit & push changes"
 Add-GitFiles
 git commit -m "PS SM+Obsidian upd"
 
-$gitPullErrors = $false
 "git pull"
-$pullOutput = cmd /c git pull
-$pullOutput = $pullOutput -split "`r`n" # split by newline in case the output is multiline
-if ($pullOutput[0] -ne "Already up to date." -and $pullOutput[1] -ne "Fast-forward") {
-    $pullOutput
-    $gitPullErrors = $true
-}
+git pull
+$pullCode = $LASTEXITCODE
 
 "git push"
 git push -u
 
-$statusOutput = cmd /c git status
-if ($statusOutput[3] -ne "nothing to commit, working tree clean" -or $gitPullErrors) {
-    $statusOutput
-    Read-Host "`r`nNon standard git output, double check above"
+if ($pullCode -or $LASTEXITCODE) {
+    Read-Host "`r`nNon standard git output - double check above"
 }
