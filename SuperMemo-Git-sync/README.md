@@ -63,7 +63,7 @@ Every time you close SuperMemo, `Add-GitFiles` function is called, which will sy
 This can be changed, if desired. E.g. if you store additional information in the same git repo, but only choose to save SuperMemo related files when your close SuperMemo. To do so, see https://git-scm.com/docs/git-add
 
 ## Enabling pro features
-For the rest of these features to work, the script needs to be run in pro mode. To do this, `--pro` needs to be added as the **last** parameter when running the script (within the outer `""`): the #Setup section at the top has this covered so just copy & paste the relevant string.
+For the rest of these features to work, the script needs to be run in pro mode. To do this, `--pro` needs to be added as the **last** parameter when running the script (within the outer `""`): the [setup](#Setup) section at the top has this covered so just copy & paste the relevant string.
 
 ### Doing a 'git stash' before launching SuperMemo
 If the script detects any dirty changes, the script will prompt you to type `cl` as you launch it. If you type in these characters and press _Enter_, the script will clear any modified files in the git repo, before launching SuperMemo.
