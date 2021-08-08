@@ -20,6 +20,9 @@ Upon launching, this script will:
 
 # Setup
 1. Download `Start & sync SM.ps1`
+  - Click on [`Start & sync SM.ps1`]() in github
+  - On the new page, click [Raw](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1)
+  - Right click on the page and click `Save (page) as ...` (specific text depends on your browser). Make sure the file is saved as a `.ps1` extension (i.e., not `Start & sync SM.ps1.txt` etc).
 2. Place the script in your git folder together with your SM collection
 3. Right click on the .ps1 script and click `Send to` > `Desktop`
 4. On your desktop, Right click on the newly created shortcut and click `Properties`
@@ -40,6 +43,18 @@ Upon launching, this script will:
 	- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"' --pro"`
 6. Press `OK` on the Properties window
 7. Optional: if you were using a shortcut to run SM, you can delete it
+
+## Setting PowerShell execution policy
+If you try to run the script and you've not run PowerShell scripts before, the script will most likely quickly close without producing any results. The reason for this is [PowerShell execution policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.1), which, by default, do not allow execution of scripts downloaded for the internet. To circumvent this:
+1. Open PowerShell in admin mode:
+	- Press `Win` key, start typing `PowerShell` and press `Ctrl+Shift+Enter` to launch it
+2. Type `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` and hit enter
+
+This will allow the execution of scripts that you unblock on case by case basis. To unblock our script and allow it to run:
+1. Right click on `Start & sync SM.ps1` in your git folder (not the shortcut on the desktop!).
+2. Tick `Unblock` at the bottom and click `Ok`.
+
+You should now be able to run the script.
 
 # How to use
 - Use this script instead of the normal SuperMemo shortcut - it will ensure you have the latest copy of your collection before you start working on it and will update the latest copy when you're finished
