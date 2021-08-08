@@ -26,7 +26,7 @@ Upon launching, this script will:
 2. Place the script in your git folder together with your SM collection
 3. Right click on the .ps1 script and click `Send to` > `Desktop`
 4. On your desktop, Right click on the newly created shortcut and click `Properties`
-5. In the `Target` field, put the respective string from the options below, depending on what you use. This info is also available at the start of the script itself (pro features are described below - if you're uncomfortable with git, use the regular version)
+5. In the `Target` field, replace the current value with the respective string from the options below (depending on what you use) - this info is also available at the start of the script itself (pro features are described below - if you're uncomfortable with git, use the regular version)
 	- SM
 		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`
 	- SM + Pro mode
