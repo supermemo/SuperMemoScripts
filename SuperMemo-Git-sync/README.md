@@ -20,7 +20,7 @@ Upon launching, this script will:
 
 # Setup
 1. Download `Start & sync SM.ps1`
-   - Click on [`Start & sync SM.ps1`]() in github
+   - Click on [`Start & sync SM.ps1`](https://github.com/supermemo/SuperMemoScripts/blob/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1) in github
    - On the new page, click [Raw](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1)
    - Right click on the page and click `Save (page) as ...` (specific text depends on your browser). Make sure the file is saved as a `.ps1` extension (i.e., not `Start & sync SM.ps1.txt` etc).
 2. Place the script in your git folder together with your SM collection
@@ -51,8 +51,8 @@ If you try to run the script and you've not run PowerShell scripts before, the s
 2. Type `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` and hit enter
 
 This will allow the execution of scripts that you unblock on case by case basis. To unblock our script and allow it to run:
-1. Right click on `Start & sync SM.ps1` in your git folder (not the shortcut on the desktop!).
-2. Tick `Unblock` at the bottom and click `Ok`.
+1. Right click on `Start & sync SM.ps1` in your git folder (not the shortcut on the desktop!)
+2. Tick `Unblock` at the bottom and click `OK`
 
 You should now be able to run the script.
 
