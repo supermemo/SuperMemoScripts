@@ -69,6 +69,11 @@ You should now be able to run the script.
 - In the event where no Internet connection is present, there is still a benefit of using this script compared to launching standalone SuperMemo: this script will create commits every time you close SuperMemo (but won't be able to push them online). This is better because it allows you to work with more granular changes, should you wish to revert them
 - Any questions - let me know, and I'll try to do a better write up/explain
 
+# FAQ
+
+- What if I don't want to sync my changes after closing SM? (e.g. when I want to experiment with my collection)
+	- Just close the script after SM is launched - if the script is closed, it can't push your changes. Alternatively, if you plan to experiment a lot, consider launching SM manually and only launch via the script to sync afterwards when you're happy with your changes.
+
 # Additional pro features
 The script will work out of the box as-is - no need to tweak it beyond the basic configuration. If you're not too comfortable with git, I recommend leaving these as is.
 

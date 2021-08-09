@@ -89,7 +89,7 @@ if ($proMode) {
 
 "Proceeding to commit & push changes"
 Add-GitFiles
-git commit -m "PS SM+Obsidian upd"
+git commit -m "PowerShell script update"
 
 "git pull"
 git pull
