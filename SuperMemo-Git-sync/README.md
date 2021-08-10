@@ -93,7 +93,7 @@ This will probably be useful if you're using your collection on 2+ devices - e.g
 Typing `cl` will clean the dirty files and sync the latest version of the knowledge collection.
 
 #### Clearing out changes when relaunching SM
-When you launch SM (via this script) and close it without performing any actions, the script will try to detect that no actions were performed (the script may not always detect this). If this is the case, the script will, once again, prompt you to enter `cl`. Doing so will clean the files as if SM was never launched in the first place.
+When you launch SM (via this script) and close it without performing any actions, the script will try to detect that no actions were performed (the script may not always detect this). If the script detects that SM was closed without many any changes, it will, once again, prompt you to enter `cl`. Doing so will clean the files as if SM was never launched in the first place.
 
 #### Getting your changes back
 If you've accidentally did a `cl` where you didn't intend to, you can get your changes back by opening _git bash_ in your knowledge folder and typing `git stash pop`. Previous versions are recoverable too, see: https://git-scm.com/docs/git-stash
