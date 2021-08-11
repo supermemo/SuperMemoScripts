@@ -74,6 +74,12 @@ You should now be able to run the script.
 - What if I don't want to sync my changes after closing SM? (e.g. when I want to experiment with my collection)
 	- Just close the script after SM is launched - if the script is closed, it can't push your changes. Alternatively, if you plan to experiment a lot, consider launching SM manually and only launch via the script to sync afterwards when you're happy with your changes.
 
+# Troubleshooting
+
+Sometimes you might encounter issues where upon running the script it will open and close PowerShell so quickly that it's impossible to see the actual error. To solve this:
+- Launch PowerShell normally
+- Type the string that you've used in the `Target` field (as described in the [setup](#Setup) section - e.g. `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`) and hit Enter
+
 # Additional pro features
 The script will work out of the box as-is - no need to tweak it beyond the basic configuration. If you're not too comfortable with git, I recommend leaving these as is.
 
