@@ -24,7 +24,7 @@ Upon launching, this script will:
    - On the new page, click [Raw](https://github.com/artjomsR/SuperMemoScripts/raw/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1)
    - Right click on the page and click `Save (page) as ...` (specific text depends on your browser). Make sure the file is saved as a `.ps1` extension (i.e., not `Start & sync SM.ps1.txt` etc).
 2. Place the script in your git folder together with your SM collection
-![](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/folder_sctructure.png)
+![Example folder structure](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/folder_sctructure.png)
 3. Right click on the .ps1 script and click `Send to` > `Desktop`
 4. On your desktop, Right click on the newly created shortcut and click `Properties`
 5. In the `Target` field, replace the current value with the respective string from the options below (depending on what you use) - this info is also available at the start of the script itself (pro features are described below - if you're uncomfortable with git, use the regular version)
@@ -80,6 +80,7 @@ You should now be able to run the script.
 Sometimes you might encounter issues where upon running the script it will open and close PowerShell so quickly that it's impossible to see the actual error. To solve this:
 - Launch PowerShell normally
 - Type the string that you've used in the `Target` field (as described in the [setup](#Setup) section - e.g. `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`) and hit Enter
+![Examples of debugging commands in PowerShell](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/running_powershell.png)
 
 # Additional pro features
 The script will work out of the box as-is - no need to tweak it beyond the basic configuration. If you're not too comfortable with git, I recommend leaving these as is.
