@@ -1,11 +1,14 @@
 # SuperMemo-Git-sync
 A PowerShell script to seamlessly backup and sync your SuperMemo collection (across multiple devices)
 
-**NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in https://www.supermemo.wiki/supermemo/backup-guide
+**NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in the SuperMemo community backup guide:
+- Text version: https://www.supermemo.wiki/supermemo/backup-guide
+- Video version: https://www.youtube.com/watch?v=4aq_Bo4zcfw
 
 # Features
 - Seamless experience. Run the script instead of the SM shortcut and it will sync your collection in the background
 - Support for both vanilla SM and [SMA](https://sma.supermemo.wiki/)
+- Automatic backup solution: git snapshot is taken every time you close SM so even if your local folder fails, you can go back to a previous version
 - Sync your collection across any number of devices, as long as your only run SM on 1 PC at a time
 - The script runs in the background unless your input is required. No need to stop to ensure your git collection is still OK every time you run SM
 - You're in control. If you're experimenting with your collection and decide you don't want to sync your changes, close the script and manually decide if you want to save / discard them
@@ -70,6 +73,7 @@ You should now be able to run the script.
 # Notes
 - This script is nothing too complicated - it's a few git commands to sync the collection, mixed in with a few readable prompts. I've used it myself for 4 months+ as of the writing of this readme file. Still, I can't hold any responsibility if something goes horribly wrong - use at your own risk and all that
 - After setting up the script, make sure to make a few test changes to ensure that everything is working as you would expect (e.g. making a simple text edit on 1 PC, and then launching the script on the other PC and expecting to see the change) 
+- The script does automatic backups for you in git every time you close it. As such, there is no need to use the backup generation functionality in SM
 - In the event where no Internet connection is present, there is still a benefit of using this script compared to launching standalone SuperMemo: this script will create commits every time you close SuperMemo (but won't be able to push them online). This is better because it allows you to work with more granular changes, should you wish to revert them
 - Any questions - you can ask for help in SuperMemo community discord: [invite](https://discord.gg/vUQhqCT), [web version](https://chat.supermemo.wiki/); or [get in touch personally](https://discordapp.com/users/204301231244574721/)
 - This project took some time to do, so if you found this work useful, you can return me the favour :) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/Rizihs)
