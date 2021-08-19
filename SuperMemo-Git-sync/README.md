@@ -18,6 +18,9 @@ Upon launching, this script will:
 3. Save your collection to git once SM is closed
 	- Once again, the script will stay opened if there's non standard output. Otherwise, it will close itself when finished
 
+# Complimentary video guide
+**TBA soon™**
+
 # Setup
 1. Download `Start & sync SM.ps1`
    - Click on `Start & sync SM.ps1` in github
@@ -68,7 +71,8 @@ You should now be able to run the script.
 - This script is nothing too complicated - it's a few git commands to sync the collection, mixed in with a few readable prompts. I've used it myself for 4 months+ as of the writing of this readme file. Still, I can't hold any responsibility if something goes horribly wrong - use at your own risk and all that
 - After setting up the script, make sure to make a few test changes to ensure that everything is working as you would expect (e.g. making a simple text edit on 1 PC, and then launching the script on the other PC and expecting to see the change) 
 - In the event where no Internet connection is present, there is still a benefit of using this script compared to launching standalone SuperMemo: this script will create commits every time you close SuperMemo (but won't be able to push them online). This is better because it allows you to work with more granular changes, should you wish to revert them
-- Any questions - let me know, and I'll try to do a better write up/explain
+- Any questions - you can ask for help in SuperMemo community discord: [invite](https://discord.gg/vUQhqCT), [web version](https://chat.supermemo.wiki/); or [get in touch personally](https://discordapp.com/users/204301231244574721/)
+- This project took some time to do, so if you found this work useful, you can return me the favour :) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/Rizihs)
 
 # FAQ
 
