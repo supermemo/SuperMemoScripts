@@ -54,7 +54,7 @@ Upon launching, this script will:
 ## Setting PowerShell execution policy
 If you try to run the script and you've not run PowerShell scripts before, the script will most likely quickly close without producing any results. The reason for this is [PowerShell execution policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.1), which, by default, do not allow execution of scripts downloaded for the internet. To circumvent this:
 1. Open PowerShell in admin mode:
-	- Press `Win` key, start typing `PowerShell` and press `Ctrl+Shift+Enter` to launch
+	- Press `Win key + X` and select `Windows PowerShell (Admin)`
 2. Type `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` and hit enter
 
 This will allow the execution of scripts that you unblock on case by case basis. To unblock our script and allow it to run:
@@ -89,6 +89,16 @@ Sometimes you might encounter issues where upon running the script it will open 
 - Launch PowerShell normally
 - Type the string that you've used in the `Target` field (as described in the [setup](#Setup) section - e.g. `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`) and hit Enter
 ![Examples of debugging commands in PowerShell](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/running_powershell.png)
+
+## Fixing common git issues
+These appear in the order of frequency & severity. Doing these will mean some loss of data (even if it may be data that you don't care about), so if you're not sure what you're doing, I recommend doing a full copy of your collection's folder.
+
+### Dirty files on pull - can't merge
+**TBA soon™**
+### Accidental commit on pull - can't merge
+**TBA soon™**
+### Accidental commit + push - can't merge
+**TBA soon™**
 
 # Additional pro features
 The script will work out of the box as-is - no need to tweak it beyond the basic configuration. If you're not too comfortable with git, I recommend leaving these as is.
