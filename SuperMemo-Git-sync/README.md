@@ -1,4 +1,4 @@
-﻿# SuperMemo-Git-sync
+# SuperMemo-Git-sync
 A PowerShell script to seamlessly backup and sync your SuperMemo collection (across multiple devices)
 
 **NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in the SuperMemo community backup guide:
