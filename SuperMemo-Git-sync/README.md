@@ -27,7 +27,7 @@ https://www.youtube.com/watch?v=uAKzWlSmkz4
 # Setup
 ## Prerequisites
 Following the [official backup guide](https://www.supermemo.wiki/supermemo/backup-guide):
-- Download git
+- [Download git](https://git-scm.com/downloads)
 - Register at https://github.com/
 
 ## Setting up the back up script
