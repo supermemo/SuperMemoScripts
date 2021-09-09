@@ -22,9 +22,15 @@ Upon launching, this script will:
 	- Once again, the script will stay opened if there's non standard output. Otherwise, it will close itself when finished
 
 # Complimentary video guide
-**TBA soon™**
+https://www.youtube.com/watch?v=uAKzWlSmkz4
 
 # Setup
+## Prerequisites
+Following the [official backup guide](https://www.supermemo.wiki/supermemo/backup-guide):
+- Download git
+- Register at https://github.com/
+
+## Setting up the back up script
 1. Download `Start & sync SM.ps1`
    - Click on `Start & sync SM.ps1` in github
    - On the new page, click [Raw](https://github.com/artjomsR/SuperMemoScripts/raw/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1)
