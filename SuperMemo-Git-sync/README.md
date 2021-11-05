@@ -33,10 +33,10 @@ Following the [official backup guide](https://www.supermemo.wiki/supermemo/backu
 ## Setting up the back up script
 1. Download `Start & sync SM.ps1`
    - Click on `Start & sync SM.ps1` in github
-   - On the new page, click [Raw](https://github.com/artjomsR/SuperMemoScripts/raw/master/SuperMemo-Git-sync/Start%20%26%20sync%20SM.ps1)
+   - On the new page, click [Raw](Start%20%26%20sync%20SM.ps1?raw=1)
    - Right click on the page and click `Save (page) as ...` (specific text depends on your browser). Make sure the file is saved as a `.ps1` extension (i.e., not `Start & sync SM.ps1.txt` etc).
 2. Place the script in your git folder together with your SM collection
-![Example folder structure](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/folder_sctructure.png)
+![Example folder structure](images/folder_sctructure.png)
 3. Right click on the .ps1 script and click `Send to` > `Desktop`
 4. On your desktop, Right click on the newly created shortcut and click `Properties`
 5. In the `Target` field, replace the current value with the respective string from the options below (depending on what you use) - this info is also available at the start of the script itself (pro features are described below - if you're uncomfortable with git, use the regular version)
@@ -94,7 +94,7 @@ You should now be able to run the script.
 Sometimes you might encounter issues where upon running the script it will open and close PowerShell so quickly that it's impossible to see the actual error. To solve this:
 - Launch PowerShell normally
 - Type the string that you've used in the `Target` field (as described in the [setup](#Setup) section - e.g. `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe"`) and hit Enter
-![Examples of debugging commands in PowerShell](https://raw.githubusercontent.com/artjomsR/SuperMemoScripts/master/SuperMemo-Git-sync/images/running_powershell.png)
+![Examples of debugging commands in PowerShell](images/running_powershell.png)
 
 ## Fixing common git issues
 These appear in the order of frequency & severity. Doing these will mean some loss of data (even if it may be data that you don't care about), so if you're not sure what you're doing, I recommend doing a full copy of your collection's folder.
