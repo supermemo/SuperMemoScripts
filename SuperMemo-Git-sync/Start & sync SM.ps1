@@ -37,15 +37,9 @@ function Clear-CurrentFolder {
 }
 
 function Remove-UselessFiles {
-    $cmdOutput = git status | Sort-Object
+    $cmdOutput = git status --porcelain=v1
     $cmdOutput
-
-    if  ($cmdOutput[4].Split("/")[1] -eq "collection.ini" -and
-        (
-            $cmdOutput[7] -eq "Changes not staged for commit:" -or
-            $cmdOutput[8] -eq "Changes not staged for commit:"
-        )
-    ) {
+    if ($cmdOutput.Count -le 5) { # less or equals
         $userInput = Read-Host -Prompt "It seems that SM was opened and closed without performing many actions. Type cl to clear them."
         if ($userInput -eq "cl") {
             Clear-CurrentFolder
@@ -89,7 +83,7 @@ if ($proMode) {
 
 "Proceeding to commit & push changes"
 Add-GitFiles
-git commit -m "PS SM+Obsidian upd"
+git commit -m "PowerShell script update"
 
 "git pull"
 git pull
