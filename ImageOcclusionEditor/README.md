@@ -9,10 +9,12 @@ This software works in tandem with Image Occlusion Editor, found [on this same G
 - [Demonstration video](#demonstration-video)
 
 ## Downloads
-https://github.com/supermemo/SuperMemoScripts/raw/master/ImageOcclusionEditor/supermemo_18.ahk
-- [Executable](https://github.com/supermemo/SuperMemoScripts/releases/download/v0.1d/SuperMemoAssistant_legacy-v0.1d.exe): Executable (.exe) format.
+
+- [Executable (SM 18)](https://github.com/supermemo/SuperMemoScripts/releases/download/0.1e/supermemo_18.exe): Executable (.exe) format.
+- [Executable (SM 17)](https://github.com/supermemo/SuperMemoScripts/releases/download/0.1e/supermemo_17.exe): Executable (.exe) format.
 - [Script (SM 18)](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/ImageOcclusionEditor/supermemo_18.ahk): Customizable script (.ahk) format.
 - [Script (SM 17)](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/ImageOcclusionEditor/supermemo_17.ahk): Customizable script (.ahk) format.
+- [Gdip_All.ahk](https://raw.githubusercontent.com/supermemo/SuperMemoScripts/master/ImageOcclusionEditor/Gdip_All.ahk): Dependency for the script version.
 
 ## Instructions
 
