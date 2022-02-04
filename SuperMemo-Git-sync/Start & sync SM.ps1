@@ -64,6 +64,7 @@ if ($null -ne $statusOutput -or $pullCode) {
     if ($proMode) {
         $userInput = Read-Host -Prompt "Type:`r`ncl if you want to clear any unsaved changes (backup will be stashed)`r`ndiff if you want to see what's actually changed (q to quit - if needed)"
         while ($userInput -eq "diff") {
+            git add --intent-to-add .
             git diff
             $userInput = Read-Host -Prompt "Type:`r`ncl if you want to clear any unsaved changes (backup will be stashed)`r`ndiff if you want to see what's actually changed (q to quit - if needed)"
         }
