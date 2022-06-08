@@ -1,15 +1,15 @@
-# Table of Contents
+# SuperMemo-Git-sync
+A PowerShell script to seamlessly backup and sync your SuperMemo collection (across multiple devices)
 
-- [SuperMemo-Git-sync](#supermemo-git-sync)
-- [Prerequisites](#prerequisites)
+# Table of Contents
 - [Features](#features)
 - [Workflow](#workflow)
-- [Complimentary video guide](#complimentary-video-guide)
 - [Setup](#setup)
-  * [Prerequisites](#prerequisites-1)
+  * [Complimentary video guide](#complimentary-video-guide)
+  * [Prerequisites](#prerequisites)
   * [Setting up the back up script](#setting-up-the-back-up-script)
   * [Setting PowerShell execution policy](#setting-powershell-execution-policy)
-- [How to use](#how-to-use)
+- [How to use the script](#how-to-use-the-script)
 - [Notes](#notes)
 - [FAQ](#faq)
 - [Troubleshooting](#troubleshooting)
@@ -23,15 +23,6 @@
     + [Doing a `git stash` before launching SuperMemo](#doing-a--git-stash--before-launching-supermemo)
       - [Clearing out changes when relaunching SM](#clearing-out-changes-when-relaunching-sm)
       - [Getting your changes back](#getting-your-changes-back)
-
-# SuperMemo-Git-sync
-A PowerShell script to seamlessly backup and sync your SuperMemo collection (across multiple devices)
-
-# Prerequisites
-This script assumes you're using git to backup your SuperMemo collection, as outlined in the SuperMemo community backup guide:
-**NB:** This script assumes you're using git to backup your SuperMemo collection, as outlined in the SuperMemo community backup guide:
-- Text version: https://www.supermemo.wiki/supermemo/backup-guide
-- Video version: https://www.youtube.com/watch?v=4aq_Bo4zcfw
 
 # Features
 - Seamless experience. Run the script instead of the SM shortcut and it will sync your collection in the background
@@ -49,12 +40,14 @@ Upon launching, this script will:
 3. Save your collection to git once SM is closed
 	- Once again, the script will stay opened if there's non standard output. Otherwise, it will close itself when finished
 
-# Complimentary video guide
+# Setup
+## Complimentary video guide
 https://www.youtube.com/watch?v=uAKzWlSmkz4
 
-# Setup
 ## Prerequisites
-Following the [official backup guide](https://www.supermemo.wiki/supermemo/backup-guide):
+- This script assumes you're using git to backup your SuperMemo collection, as outlined in the SuperMemo community backup guide:
+  - Text version: https://www.supermemo.wiki/en/supermemo/backup-guide#installing-setting-up-git
+  - Video version: https://www.youtube.com/watch?v=4aq_Bo4zcfw
 - [Download git](https://git-scm.com/downloads)
 - Register at https://github.com/
 
@@ -97,7 +90,7 @@ This will allow the execution of scripts that you unblock on case by case basis.
 
 You should now be able to run the script.
 
-# How to use
+# How to use the script
 - Use this script instead of the normal SuperMemo shortcut - it will ensure you have the latest copy of your collection before you start working on it and will update the latest copy when you're finished
 - This is especially true for multiple devices: if you setup this script on multiple PCs then you don't need to worry about having the latest copy of your collection. As long as you only run this script (and not SM directly) then you can always pick up where you left off at any of your workstations
 - **Do not** use this script to work on multiple devices **in parallel**: not only is this inefficient (as you'll see the same elements on every device, duplicating your efforts) but this will also create conflicting commits in git: eventually, when you'll try to sync your work between your devices, you'll get conflicts in git which would need to be resolved
@@ -105,7 +98,7 @@ You should now be able to run the script.
 	- If you accidentally launch SuperMemo on multiple computers, modified files may prevent git from syncing your latest changes from other devices. To resolve this, you may need to `reset` and `stash` your changes.
 
 # Notes
-- This script is nothing too complicated - it's a few git commands to sync the collection, mixed in with a few readable prompts. I've used it myself for 4 months+ as of the writing of this readme file. Still, I can't hold any responsibility if something goes horribly wrong - use at your own risk and all that
+- This script is nothing too complicated - it's a few git commands to sync the collection, mixed in with a few readable prompts. I've used it myself for 1 year+ as of the writing of this readme file. Still, I can't hold any responsibility if something goes horribly wrong - use at your own risk and all that
 - After setting up the script, make sure to make a few test changes to ensure that everything is working as you would expect (e.g. making a simple text edit on 1 PC, and then launching the script on the other PC and expecting to see the change) 
 - The script does automatic backups for you in git every time you close it. As such, there is no need to use the backup generation functionality in SM
 - In the event where no Internet connection is present, there is still a benefit of using this script compared to launching standalone SuperMemo: this script will create commits every time you close SuperMemo (but won't be able to push them online). This is better because it allows you to work with more granular changes, should you wish to revert them
