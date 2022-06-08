@@ -1,3 +1,29 @@
+# Table of Contents
+
+- [SuperMemo-Git-sync](#supermemo-git-sync)
+- [Prerequisites](#prerequisites)
+- [Features](#features)
+- [Workflow](#workflow)
+- [Complimentary video guide](#complimentary-video-guide)
+- [Setup](#setup)
+  * [Prerequisites](#prerequisites-1)
+  * [Setting up the back up script](#setting-up-the-back-up-script)
+  * [Setting PowerShell execution policy](#setting-powershell-execution-policy)
+- [How to use](#how-to-use)
+- [Notes](#notes)
+- [FAQ](#faq)
+- [Troubleshooting](#troubleshooting)
+  * [Fixing common git issues](#fixing-common-git-issues)
+    + [Dirty files on pull - can't merge](#dirty-files-on-pull---can-t-merge)
+    + [Accidental commit on pull - can't merge](#accidental-commit-on-pull---can-t-merge)
+    + [Accidental commit + push - can't merge](#accidental-commit---push---can-t-merge)
+- [Additional pro features](#additional-pro-features)
+  * [Controlling what is synced by this script](#controlling-what-is-synced-by-this-script)
+  * [Enabling pro features](#enabling-pro-features)
+    + [Doing a `git stash` before launching SuperMemo](#doing-a--git-stash--before-launching-supermemo)
+      - [Clearing out changes when relaunching SM](#clearing-out-changes-when-relaunching-sm)
+      - [Getting your changes back](#getting-your-changes-back)
+
 # SuperMemo-Git-sync
 A PowerShell script to seamlessly backup and sync your SuperMemo collection (across multiple devices)
 
