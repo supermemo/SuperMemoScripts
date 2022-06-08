@@ -67,14 +67,10 @@ https://www.youtube.com/watch?v=uAKzWlSmkz4
 		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\sm18.exe --pro"`
 
 	- SMA
-		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe"`
+		- **NB** Note that for SMA, multiple .exe are available. You need to make sure to use the one in `app-2.1.0-beta.21` folder for the script to work
+		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\app-2.1.0-beta.21\SuperMemoAssistant.exe"`
 	- SMA + Pro mode
-		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --pro"`
-
-	- SMA with a default collection
-		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"'"`
-	- SMA with a default collection + Pro mode
-		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"' --pro"`
+		- `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\app-2.1.0-beta.21\SuperMemoAssistant.exe --pro"`
 6. Press `OK` on the Properties window
 7. Optional: if you were using a shortcut to run SM, you can delete it
 
