@@ -39,7 +39,7 @@ function Clear-CurrentFolder {
 function Remove-UselessFiles {
     $cmdOutput = git status --porcelain=v1
     $cmdOutput
-    if ($cmdOutput.Count -le 5) { # less or equals
+    if ($cmdOutput.Count -le 7) { # less or equals
         $userInput = Read-Host -Prompt "It seems that SM was opened and closed without performing many actions. Type cl to clear them."
         if ($userInput -eq "cl") {
             Clear-CurrentFolder
