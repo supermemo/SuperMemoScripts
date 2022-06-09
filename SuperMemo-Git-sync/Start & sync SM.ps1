@@ -18,12 +18,6 @@
 # C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --pro"
 
 
-# SMA with a default collection
-# C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"'"
-
-# SMA with a default collection + Pro mode
-# C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "& 'D:\path\to\Start & sync SM.ps1' C:\path\to\SuperMemoAssistant.exe --collection='\"D:\path\to\your SM collection.KNO\"' --pro"
-
 function Add-GitFiles {
     git add -A *
 }
@@ -39,7 +33,7 @@ function Clear-CurrentFolder {
 function Remove-UselessFiles {
     $cmdOutput = git status --porcelain=v1
     $cmdOutput
-    if ($cmdOutput.Count -le 5) { # less or equals
+    if ($cmdOutput.Count -le 7) { # less or equals
         $userInput = Read-Host -Prompt "It seems that SM was opened and closed without performing many actions. Type cl to clear them."
         if ($userInput -eq "cl") {
             Clear-CurrentFolder
@@ -62,7 +56,12 @@ if ($null -ne $statusOutput -or $pullCode) {
     $statusOutput
     "`r`nNon standard git output - double check above"
     if ($proMode) {
-        $userInput = Read-Host -Prompt "Type cl if you want to clear any unsaved changes(backup will be stashed)"
+        $userInput = Read-Host -Prompt "Type:`r`ncl if you want to clear any unsaved changes (backup will be stashed)`r`ndiff if you want to see what's actually changed (q to quit - if needed)"
+        while ($userInput -eq "diff") {
+            git add --intent-to-add .
+            git diff
+            $userInput = Read-Host -Prompt "Type:`r`ncl if you want to clear any unsaved changes (backup will be stashed)`r`ndiff if you want to see what's actually changed (q to quit - if needed)"
+        }
         if ($userInput -eq "cl") {
             Clear-CurrentFolder
         }
