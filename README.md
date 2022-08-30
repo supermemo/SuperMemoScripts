@@ -16,6 +16,7 @@ Compilation of scripts for [SuperMemo](www.supermemo.wiki), submitted by users o
 
 - [Image Occlusion Editor](ImageOcclusionEditor/): Alternative image occlusion editor for SuperMemo 17+.
 - [Git sync](SuperMemo-Git-sync/): Automatically synchronize with Git when running SuperMemo.
+- [YouTube React Extension](YouTubeReactExtension/): SuperMemo YouTube extract performance improvements and extensions.
 
 ## Submitting your scripts
 

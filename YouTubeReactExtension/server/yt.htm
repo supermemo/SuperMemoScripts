@@ -1,0 +1,424 @@
+<!DOCTYPE HTML>
+    <head>
+		<META content="IE=11.0000" http-equiv="X-UA-Compatible">
+        <style type="text/css">
+            body, div, h4, p, input, select {
+                margin: 0;
+                padding: 0;
+            }
+
+            img {
+                margin: 0 2px;
+            }
+
+            #ga {
+                display: none;
+            }
+
+            #feedbackOuter {
+                margin: 5px;
+                display: none;
+                width: 415px;
+                text-align: center;
+            }
+
+            .img-yellow-message-top-cap, .img-yellow-message-bottom-cap {
+                height: 4px;
+                font-size: 0;
+            }
+
+            .img-yellow-message-top-cap {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat 0 -32px;
+            }
+
+            .left-right-border-yellow {
+                border-left: 1px solid #F5E082;
+                border-right: 1px solid #F5E082;
+                background-color: #FFFFE5;
+            }
+
+            .img-yellow-message-bottom-cap {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat 0 -36px;
+            }
+
+            #feedbackInner {
+                padding: 5px;
+                text-align: left;
+            }
+
+            h4 {
+                padding-left: 17px;
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -401px 1px;
+            }
+
+            .bd {
+                margin: 5px 0;
+            }
+
+            .ft {
+                text-align: center;
+            }
+
+            .email {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat 0 0;
+            }
+
+            fieldset {
+                padding: 5px;
+                border: none;
+                display: block;
+                width: 425px;
+            }
+
+            p {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ctrlGrp {
+                border-top: 1px solid #808080;
+                clear: both;
+            }
+
+            .ctrlSubgrp {
+                padding: 5px;
+                border-left: 1px solid #808080;
+                float: left;
+            }
+
+            .firstCtrlGrp, .firstCtrlSubgrp {
+                border: none;
+            }
+
+            .debug {
+                font-size: xx-small;
+            }
+
+            .repeat {
+                float: left;
+                height: 3.6em;
+            }
+
+            button, input {
+                width: 5em;
+            }
+
+            .checkbox {
+                width: auto;
+            }
+
+            select, #extractName {
+                width: 15em;
+            }
+
+            a span {
+                height: 16px;
+                width: 16px;
+                font-size: 0;
+            }
+
+            .ctrlGrp label {
+                display: block;
+                width: auto;
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -254px 0;
+            }
+
+            .imgBtn {
+                border: 0;
+                width: 16px;
+                vertical-align: text-top;
+            }
+
+            .rewind {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -16px 0;
+            }
+
+            .forward {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -32px 0;
+            }
+
+            .goTo {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -48px 0;
+            }
+
+            .restoreStartAt {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -64px 0;
+            }
+
+            .restoreStopAt {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -80px 0;
+            }
+
+            .removeCurrentExtract {
+                background: transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0;
+            }
+			
+			.videoWrapper {
+				position: relative;
+				padding-bottom: 56.25%; /* 16:9 */
+				padding-top: 25px;
+				height: 0;
+			}
+			.videoWrapper iframe {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+        </style>
+        <link href="http://localhost:8000/scripts/container.css" type="text/css" rel="stylesheet" />
+    </head>
+    <body class="yui-skin-sam">
+        <div id="customPrompt">
+            <div class="hd">Save As</div>
+            <div class="bd">
+                <form name="promptForm" id="promptForm">
+                    <label for="extractName">Extract name: </label>
+                    <input type="text" name="extractName" id="extractName" onfocus="this.select();" onblur="oCustomPrompt.focusFirstButton();" />
+                </form>
+            </div>
+        </div>
+        <div id="feedbackOuter">
+            <div class="img-yellow-message-top-cap"></div>
+            <div class="left-right-border-yellow">
+                <div id="feedbackInner"></div>
+            </div>
+            <div class="img-yellow-message-bottom-cap"></div>
+        </div>
+        <div id='container' ref={this.ref}></div>
+        <input type="hidden" value="zzzYT-IDzzz" id="videoid" />
+        <input type="hidden" value="1" id="imposeboundries" />
+        <fieldset>
+            <div class="ctrlGrp firstCtrlGrp">
+                <div class="ctrlSubgrp firstCtrlSubgrp">
+                    <p>
+                        <button type="button" id="mark" onclick="setAt('resume');">Mark</button>
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindResume" class="imgBtn rewind" onclick="move('resume', 'rewind');" />
+						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardResume" class="imgBtn forward" onclick="move('resume', 'forward');" />
+						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" />
+                        <button type="button" id="resume" onclick="resumeVideo();">Resume</button>
+                    </p>
+                </div>
+            </div>
+            <div class="ctrlGrp">
+                <div class="ctrlSubgrp firstCtrlSubgrp">
+                    <p>
+                        <button type="button" id="start" onclick="setAt('start');">Start</button>
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
+                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('start');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
+                    </p>
+                    <p>
+                        <button type="button" id="stop" onclick="setAt('stop');">Stop</button>
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
+                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('stop');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
+                    </p>
+                </div>
+                <div class="ctrlSubgrp repeat">
+                    <p>
+                        <input type="checkbox" checked="checked" id="repeat" class="checkbox" />
+                        <label for="repeat" title="Repeat (R)">&nbsp;</label>
+                    </p>
+                </div>
+                <div class="ctrlSubgrp">
+                    <p>
+                        <button type="button" id="test" onclick="testExtract();">Test</button>
+                    </p>
+                    <p>
+                        <button type="button" id="reset" onclick="resetExtract();">Reset</button>
+                    </p>
+                </div>
+            </div>
+            <div class="ctrlGrp">
+                <div class="ctrlSubgrp firstCtrlSubgrp">
+                    <p>
+                        <button type="button" id="extract" onclick="addExtract();">Extract</button>
+                        <select id="extracts" onchange="feedCurrentExtract();" onclick="feedCurrentExtract();"></select>
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
+                    </p>
+                </div>
+            </div>
+			<div class="ctrlGrp">
+				<textarea id="log" style="width: 100%"></textarea>
+			</div>
+            <div class="ctrlGrp">
+                <div class="ctrlSubgrp firstCtrlSubgrp debug">Date: Nov 29, 2017</div>
+            </div>
+
+			<input type="hidden" value="0" id="customPromptVisible" />
+        </fieldset>
+        <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js"></script>
+
+        <!-- <script type="text/javascript" src='http://localhost:8000/node_modules/@babel/polyfill/dist/polyfill.min.js'></script> -->
+        <script src="http://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+        <!-- add support for image frame fetching -->
+        <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script>
+        <!-- <script type="text/javascript" src='http://unpkg.com/react-player/dist/ReactPlayer.standalone.js'></script> -->
+        <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js'></script>
+        <script>
+            //ref = player => {
+            //    this.player = player
+            //}
+            /*ref = function(player) {
+                this.player = player
+            }*/
+
+            //TODO state loading
+            state = {
+            url: null,
+            pip: false,
+            playing: true,
+            controls: false,
+            light: false,
+            volume: 0.8,
+            muted: false,
+            played: 0,
+            loaded: 0,
+            duration: 0,
+            playbackRate: 1.0,
+            loop: false
+            }
+
+            function setAt(type) {
+                var oAt,
+                    iCurrTime = 0,
+                    iDuration = 0;
+
+                if (ytplayer) {
+                    iCurrTime = parseInt(ytplayer.getCurrentTime());
+                    document.getElementById("log").innerHTML += 'num' + iCurrTime + '\n';
+                    iDuration = parseInt(ytplayer.getDuration());
+                    oAt = document.getElementById(type + "videoat");
+                    oAt.value = convertDuration2HHMMSS(iCurrTime);
+                    if (type != "resume") {
+                        document.getElementById("imposeboundries").value = 0;
+                        updateBorder(oAt);
+                    }
+                }
+            }
+
+            function updateBorder(inputText) {
+                var sBorderCl = "",
+                    iNewVal = convertHHMMSS2Duration(inputText.value);
+
+                switch (inputText.id.replace(/videoat/, "")) {
+                    case "start":
+                        if (iNewVal > 0) {
+                            sBorderCl = "blue";
+                        }
+                        break;
+
+                    case "stop":
+                        if (ytplayer) {
+                            //TODO handle stop
+                            /*if (ytplayer.getPlayerState() >= 1) {
+                                if (iNewVal < parseInt(ytplayer.getDuration())) {
+                                    sBorderCl = "blue";
+                                }
+                            }*/
+                        }
+                        break;
+                }
+
+                if (sBorderCl.length) {
+                    inputText.style.border = "2px solid " + sBorderCl;
+                } else {
+                    inputText.style.border = "2px inset";
+                }
+            }
+ 
+            function onRenderReady(player){
+                ytplayer = player;
+            }
+
+            function convertDuration2HHMMSS(seconds) {
+                var iDuration = parseInt(seconds),
+                    iTotalMinutes = Math.floor(iDuration / 60),
+                    iHours = Math.floor(iTotalMinutes / 60),
+                    iMinutes = iTotalMinutes % 60,
+                    iSeconds = iDuration % 60;
+
+                if (iHours > 0) {
+                    return iHours + ":" + padZero(iMinutes) + ":" + padZero(iSeconds);
+                } else {
+                    return iMinutes + ':' + padZero(iSeconds);
+                }
+            }
+
+            function padZero(number) {
+                if (number < 10) {
+                    return "0" + number;
+                } else {
+                    return number;
+                }
+            }
+
+            function convertHHMMSS2Duration(time) {
+                var iTotalSeconds = 0,
+                    aTime = time.split(":");
+
+                switch (aTime.length) {
+                    case 3:
+                        iTotalSeconds += aTime[0] * 60 * 60;
+                        iTotalSeconds += aTime[1] * 60;
+                        iTotalSeconds += aTime[2] * 1;
+                        break;
+
+                    case 2:
+                        iTotalSeconds += aTime[0] * 60;
+                        iTotalSeconds += aTime[1] * 1;
+                        break;
+
+                    default:
+                        iTotalSeconds += aTime[0] * 1;
+                        break;
+                }
+
+                return iTotalSeconds;
+            }
+
+            var parseUrlQuery = function(urlQuery) {
+                var aUrlQuery,
+                    aUrlParam,
+                    oUrlQuery = {};
+                
+                urlQuery = urlQuery.substring(1);
+                
+                aUrlQuery = urlQuery.split("&");
+                
+                for (var i = 0, j = aUrlQuery.length; i < j; i++) {
+                    aUrlParam = aUrlQuery[i].split("=");
+                    oUrlQuery[aUrlParam[0]] = aUrlParam[1];
+                }
+                
+                return oUrlQuery;
+            },
+            oUrlQuery = parseUrlQuery(document.location.search),
+            ytplayer;
+            
+            document.getElementById("videoid").value = oUrlQuery.videoid;
+            document.getElementById("resumevideoat").value = oUrlQuery.resume;
+            document.getElementById("startvideoat").value = oUrlQuery.start;
+            document.getElementById("stopvideoat").value = oUrlQuery.stop;
+
+            var container = document.getElementById('container');
+            var url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
+            var test = {url:url, 
+                playing:true,
+                //light:true,
+                controls:true,
+                onReady:onRenderReady
+            };
+
+            renderReactPlayer(container, test);
+            document.getElementById("log").innerHTML += 'debug\n';
+        </script>
+    </body>
+</html>
