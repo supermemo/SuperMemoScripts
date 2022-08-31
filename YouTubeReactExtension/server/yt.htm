@@ -254,21 +254,146 @@
 
 			<input type="hidden" value="0" id="customPromptVisible" />
         </fieldset>
+        <!-- supermemory.org -->
         <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js"></script>
-
+        
         <!-- <script type="text/javascript" src='http://localhost:8000/node_modules/@babel/polyfill/dist/polyfill.min.js'></script> -->
-        <script src="http://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
-        <!-- add support for image frame fetching -->
-        <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script>
-        <!-- <script type="text/javascript" src='http://unpkg.com/react-player/dist/ReactPlayer.standalone.js'></script> -->
+        <!-- http://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js -->
+        <script src="http://localhost:8000/scripts/polyfill.min.js"></script>
+
+        <!-- add support for thumbnail frame fetching, TODO -->
+        <!-- <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script> -->
+
+        <!-- http://unpkg.com/react-player/dist/ReactPlayer.standalone.js -->
         <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js'></script>
         <script>
-            //ref = player => {
-            //    this.player = player
-            //}
-            /*ref = function(player) {
-                this.player = player
-            }*/
+            // define a new console
+            var console=(function(oldCons){
+                var oLog = document.getElementById("log");
+                return {
+                    log: function(text){
+                        //oldCons.log(text);
+                        //oLog.innerHTML += '[LOG] ' + text + '\n';                    
+                    },
+                    info: function (text) {
+                        //oldCons.info(text);
+                        // Your code
+                        oLog.innerHTML += '[INFO] ' + text + '\n';                    
+                    },
+                    warn: function (text) {
+                        //oldCons.warn(text);
+                        // Your code
+                        oLog.innerHTML += '[WARN] ' + text + '\n';                    
+                    },
+                    error: function (text) {
+                        //oldCons.error(text);
+                        // Your code
+                        oLog.innerHTML += '[ERROR] ' + text + '\n';                    
+                    }
+                };
+            }(window.console));
+
+            //Then redefine the old console
+            window.console = console;
+
+            window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+                // Log the error here -- perhaps using an AJAX call
+                console.log(errorMsg);
+            }
+
+            var fOK = function (e) {
+	                var oNewOpt,
+	                    sExtractName = this.getData().extractName,
+	                    oStartAt = document.getElementById("startvideoat"),
+	                    oStopAt = document.getElementById("stopvideoat"),
+	                    sExtractVal = oStartAt.value + " - " + oStopAt.value,
+	                    oExtracts = document.getElementById("extracts"),
+	                    oResumeAt = document.getElementById("resumevideoat"),
+						oCustomPromptVisible = document.getElementById("customPromptVisible");
+
+                    // (1) updates [extracts] menu with a new extract
+                    oNewOpt = new Option(sExtractName, sExtractVal);
+                    oExtracts.options[oExtracts.options.length] = oNewOpt;
+                    oExtracts.selectedIndex = oExtracts.options.length - 1;
+                    oExtracts.disabled = false;
+                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
+                    // (2) sets [resumevideoat] text input to [stopvideoat]
+                    // oResumeAt.value = oStopAt.value;
+                    // (3) sets [startvideoat] text input to EXPERIMENTAL Stop - 1 sec.
+                    oStartAt.value = convertDuration2HHMMSS(convertHHMMSS2Duration(oStopAt.value) - 1);
+                    // (4) resets [stopvideoat] text input
+                    resetAt("stop");
+
+                    oCustomPromptVisible.value = 0;
+
+					if (oCustomPromptVisible.value == 0) {
+						this.hide();
+
+	                    oRKeyListener.enable();
+					}
+                },
+                fCancel = function () {
+					var oCustomPromptVisible = document.getElementById("customPromptVisible");
+
+					oCustomPromptVisible.value = 0;
+
+					if (oCustomPromptVisible.value == 0) {
+						this.cancel();
+
+	                    oRKeyListener.enable();
+					}
+                },
+                oCustomPromptCfg = {
+                    visible: false,
+                    constraintoviewport: true,
+                    context: ["extracts", "bl", "tl"],
+                    width: "auto",
+                    dragOnly: true,
+                    modal: true,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: fOK,
+                            isDefault: true
+                        },
+                        {
+                            text: "Cancel",
+                            handler: fCancel
+                        }
+                    ],
+                    postmethod: "none"
+                },
+                oCustomPrompt = new YAHOO.widget.Dialog(
+                    "customPrompt",
+                    oCustomPromptCfg
+                ),
+                oESCKeyListener = new YAHOO.util.KeyListener(
+                    document,
+                    {
+                        keys: YAHOO.util.KeyListener.KEY.ESCAPE
+                    },
+                    {
+                        fn: fCancel,
+                        scope: oCustomPrompt,
+                        correctScope: true
+                    }
+                ),
+                fTurnRepeatOnOff = function () {
+                    var oRepeat = document.getElementById("repeat");
+
+                    if (oRepeat.checked) {
+                        oRepeat.checked = false;
+                    } else {
+                        oRepeat.checked = true;
+                    }
+                },
+                oRKeyListener = new YAHOO.util.KeyListener(
+                    document,
+                    {
+                        keys: 82
+                    },
+                    fTurnRepeatOnOff
+                );
 
             //TODO state loading
             state = {
@@ -293,7 +418,6 @@
 
                 if (ytplayer) {
                     iCurrTime = parseInt(ytplayer.getCurrentTime());
-                    document.getElementById("log").innerHTML += 'num' + iCurrTime + '\n';
                     iDuration = parseInt(ytplayer.getDuration());
                     oAt = document.getElementById(type + "videoat");
                     oAt.value = convertDuration2HHMMSS(iCurrTime);
@@ -302,6 +426,27 @@
                         updateBorder(oAt);
                     }
                 }
+            }
+
+            function resetAt(type) {
+                var oAt = document.getElementById(type + "videoat"),
+                    iAt;
+
+                switch (type) {
+                    case "resume":
+                    case "start":
+                        iAt = 0;
+                        break;
+
+                    case "stop":
+                        if (ytplayer) {
+                            iAt = parseInt(ytplayer.getDuration());
+                        }
+                        break;
+                }
+
+                oAt.value = convertDuration2HHMMSS(iAt);
+                oAt.style.border = "2px inset";
             }
 
             function updateBorder(inputText) {
@@ -336,6 +481,281 @@
  
             function onRenderReady(player){
                 ytplayer = player;
+            }
+
+            function handlePlayerReady(player) {
+                ytplayer = player;
+
+                // TODO key handlers
+                var aSelects = document.getElementsByTagName("select");
+
+                oCustomPrompt.cfg.queueProperty("keylisteners", oESCKeyListener);
+                oCustomPrompt.render();
+
+                oRKeyListener.enable();
+
+                for (i = 0, j = aSelects.length; i < j; i++) {
+                    if (!aSelects[i].options.length) {
+                        aSelects[i].disabled = true;
+                    }
+                }
+
+                // ytplayer = document.getElementById("smytplayer");
+                if (1 == document.getElementById("imposeboundries").value) {
+                    seekVideo("start");
+                } else {
+                    seekVideo("resume");
+                }
+            }
+
+            function seekVideo(to) {
+                if (ytplayer) {
+                    ytplayer.seekTo(convertHHMMSS2Duration(document.getElementById(to + "videoat").value), 'seconds');
+                    
+					/*
+                    ytplayer.addEventListener("onStateChange", "onytplayerStateChange");
+                    ytplayer.addEventListener("onError", "onPlayerError");
+					*/
+                }
+            }
+
+            /*
+            // TODO implement Resume
+            function pausePlayer () {
+                renderReactPlayer(container, { url:url, playing: false })
+            }
+
+            function playPlayer () {
+                renderReactPlayer(container, { url:url, playing: true })
+            }*/
+
+            function resumeVideo() {
+                if (ytplayer) {
+                    //TODO
+                    //playPlayer();
+                    seekVideo('resume');
+                }
+            }
+
+            function testExtract() {
+                if (ytplayer) {
+                    //TODO
+                    //ytplayer.playVideo();
+                    seekVideo("start");
+                    document.getElementById("imposeboundries").value = 1;
+                }
+            }
+
+            function resetExtract() {
+                if (ytplayer) {
+                    document.getElementById("imposeboundries").value = 0;
+                    resetAt("start");
+                    resetAt("stop");
+                }
+            }
+
+            function addExtract() {
+                var oCustomPromptVisible = document.getElementById("customPromptVisible"),
+					oExtracts = document.getElementById("extracts"),
+                    iNextExtractNo = (!oExtracts.options.length) ? 1 : oExtracts.options.length + 1,
+                    sExtractName = "Extract #" + iNextExtractNo;
+
+				oCustomPromptVisible.value = 1;
+
+				if (oCustomPromptVisible.value == 1) {
+	                document.getElementById("extractName").value = sExtractName;
+
+					oCustomPrompt.show();
+
+	                oRKeyListener.disable();
+				}
+            }
+
+            function feedCurrentExtract(e) {
+                var oEvent = YAHOO.util.Event.getEvent(e),
+                    oSelect = document.getElementById("extracts"),
+                    sCurrentExtract = "",
+                    aCurrentExtract = [],
+                    oStartAt = document.getElementById("startvideoat"),
+                    oStopAt = document.getElementById("stopvideoat");
+
+                if ((oSelect.options.length > 1) && (oEvent.type == "click")) {
+                    YAHOO.util.Event.stopEvent(oEvent);
+                    return;
+                }
+
+                sCurrentExtract = oSelect.options[oSelect.selectedIndex].value;
+                aCurrentExtract = sCurrentExtract.split(" - ");
+                oStartAt.value = aCurrentExtract[0];
+                updateBorder(oStartAt);
+                oStopAt.value = aCurrentExtract[1];
+                updateBorder(oStopAt);
+                if (ytplayer) {
+                    //TODO
+                    //ytplayer.playVideo();
+                }
+                seekVideo("start");
+                document.getElementById("imposeboundries").value = 1;
+                oSelect.blur();
+            }
+
+            function removeCurrentExtract() {
+                var oExtracts = document.getElementById("extracts"),
+                    oCurrentExtract = oExtracts.options[oExtracts.selectedIndex];
+
+                oExtracts.options[oExtracts.selectedIndex] = null;
+                if (oExtracts.options.length) {
+                    oExtracts.selectedIndex = oExtracts.options.length - 1;
+                } else {
+                    oExtracts.disabled = true;
+                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0";
+                }
+            }
+
+            function goTo(type) {
+                if (ytplayer) {
+                    //TODO
+                    //ytplayer.playVideo();
+                    seekVideo(type);
+                    document.getElementById("imposeboundries").value = 0;
+                }
+            }
+
+            function move(type, where) {
+                var oAt = document.getElementById(type + "videoat"),
+                    iOldVal = convertHHMMSS2Duration(oAt.value),
+                    iNewVal = 0,
+                    iMaxVal = 0;
+
+                if (ytplayer) {
+                    iMaxVal = parseInt(ytplayer.getDuration());
+                }
+
+                switch (where) {
+                    case "rewind":
+                        iNewVal = iOldVal - iSecs;
+                        if (iNewVal <= 0) {
+                            iNewVal = 0;
+                        }
+                        if (iNewVal > iMaxVal) {
+                            iNewVal = iMaxVal;
+                        }
+                        break;
+
+                    case "forward":
+                        iNewVal = iOldVal + iSecs;
+                        if (iNewVal >= iMaxVal) {
+                            iNewVal = iMaxVal;
+                        }
+                        if (iNewVal < 0) {
+                            iNewVal = 0;
+                        }
+                        break;
+                }
+
+                oAt.value = convertDuration2HHMMSS(iNewVal);
+            }
+
+            //keep player progress within learning boundaries
+            function checkBoundaries() {
+                var oVideoId = document.getElementById("videoid"),
+                    oImposeBoundries = document.getElementById("imposeboundries"),
+                    oResumeAt = document.getElementById("resumevideoat"),
+                    iResumeAt = convertHHMMSS2Duration(oResumeAt.value),
+                    oRewindStart = document.getElementById("rewindStart"),
+					oRewindStop = document.getElementById("rewindStop"),
+                    sRewindAlt = "Rewind " + iSecs + " Sec.",
+                    oStartAt = document.getElementById("startvideoat"),
+                    iStartAt = convertHHMMSS2Duration(oStartAt.value),
+                    oStopAt = document.getElementById("stopvideoat"),
+                    iStopAt = convertHHMMSS2Duration(oStopAt.value),
+                    oForwardStart = document.getElementById("forwardStart"),
+					oForwardStop = document.getElementById("forwardStop"),
+                    sForwardAlt = "Forward " + iSecs + " Sec.",
+                    bRepeat = document.getElementById("repeat").checked,
+                    fCurrentTime,
+                    iDuration,
+					oLog = document.getElementById("log");
+
+                if (ytplayer) {
+                    iDuration = parseInt(ytplayer.getDuration());
+                    fCurrentTime = ytplayer.getCurrentTime();
+                    oRewindStart.title = sRewindAlt;
+					oRewindStop.title = sRewindAlt;
+					if (!oRewindStart.alt.length) {
+                        oRewindStart.alt = sRewindAlt;
+                    }
+					if (!oRewindStop.alt.length) {
+                        oRewindStop.alt = sRewindAlt;
+                    }					
+                    oForwardStart.title = sForwardAlt;
+                    oForwardStop.title = sForwardAlt;
+                    if (!oForwardStart.alt.length) {
+                        oForwardStart.alt = sForwardAlt;
+                    }
+                    if (!oForwardStop.alt.length) {
+                        oForwardStop.alt = sForwardAlt;
+                    }
+
+                    //TODO do I need this start stop vid ID logic (?)
+                    //sCurrentVideoUrl = ytplayer.getVideoUrl();
+                    //sCurrentVideoId = sCurrentVideoUrl.substr(sCurrentVideoUrl.indexOf("v=") + 2, 11);
+                    if ((0 == iResumeAt) 
+                        //|| (sCurrentVideoId != oVideoId.value)
+                        ) {
+                        //oVideoId.value = sCurrentVideoId;
+                        oResumeAt.value = convertDuration2HHMMSS(0);
+                    }
+                    if ((0 == iStartAt) && (0 == iStopAt) 
+                        //|| (sCurrentVideoId != oVideoId.value)
+                        ) {
+                        //oVideoId.value = sCurrentVideoId;
+                        resetAt("start");
+                        resetAt("stop");
+                    }
+                    if (iStartAt > iStopAt) {
+                        if (document.activeElement.id != "stopvideoat") {
+                            resetAt("stop");
+                        }
+                    }
+                    if (((iStartAt > 0) && (0 == iStopAt)) || ((iStartAt > 0) && (iStopAt > iDuration))) {
+                        if (document.activeElement.id != "stopvideoat") {
+                            resetAt("stop");
+                        }
+                    }
+                    if (document.activeElement.id != "startvideoat") {
+                        updateBorder(oStartAt);
+                    }
+                    if (document.activeElement.id != "stopvideoat") {
+                        updateBorder(oStopAt);
+                    }
+                    if ((iDuration - fCurrentTime) < 1) {
+                        ytplayer.seekTo(iStartAt, 'seconds');
+                        if (!bRepeat) {
+                            //ytplayer.pauseVideo();
+                            //TODO same as pausing?
+                            ytplayer.setState({ playing: false })
+                        }
+                    }
+                    if ((1 == parseInt(oImposeBoundries.value)) && (fCurrentTime >= iStopAt)) {
+                        if (bRepeat) {
+                            seekVideo("start");
+                        } else {
+                            //ytplayer.pauseVideo();
+                            ytplayer.setState({ playing: false })
+                        }
+                    }
+                }
+            }
+
+            function handleProgress(state) {
+                console.log('onProgress ' + state);
+                // We only want to update time slider if we are not currently seeking
+                if (!ytplayer.state.seeking) {
+                    ytplayer.setState(state);
+
+                    checkBoundaries();
+                }
             }
 
             function convertDuration2HHMMSS(seconds) {
@@ -401,6 +821,9 @@
                 return oUrlQuery;
             },
             oUrlQuery = parseUrlQuery(document.location.search),
+            iSecs = 1,
+            url,
+            container,
             ytplayer;
             
             document.getElementById("videoid").value = oUrlQuery.videoid;
@@ -408,13 +831,16 @@
             document.getElementById("startvideoat").value = oUrlQuery.start;
             document.getElementById("stopvideoat").value = oUrlQuery.stop;
 
-            var container = document.getElementById('container');
-            var url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
+            container = document.getElementById('container');
+            url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
             var test = {url:url, 
                 playing:true,
+                //TODO add light toggle
                 //light:true,
                 controls:true,
-                onReady:onRenderReady
+                onReady:handlePlayerReady,
+                //onPlay:handlePlay,
+                onProgress:handleProgress,
             };
 
             renderReactPlayer(container, test);
