@@ -1,6 +1,15 @@
-<!DOCTYPE HTML>
-    <head>
-		<META content="IE=11.0000" http-equiv="X-UA-Compatible">
+<!DOCTYPE html>
+<!-- To interface with SuperMemo you must preserve these properties and fields when editing yt.htm:
+    - the order of INPUT fields (these are used by SuperMemo to collect extract boundaries)
+    - SELECT and OPTION fields for generating extracts
+    - INPUT field with YouTube video ID substituted by SuperMemo (id="videoid")
+    - INPUT field that determines the position of video start and end (id="startvideoat" and id="stopvideoat")(must be "0:00:00")
+    see: https://help.supermemo.org/wiki/Incremental_video#Your_own_incremental_video_script
+    Symptoms of failure to do this: extract start nd stop times are rotated incorrctly (start becomes stop)
+-->
+<html><head>
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+        <meta content="IE=11.0000" http-equiv="X-UA-Compatible">
         <style type="text/css">
             body, div, h4, p, input, select {
                 margin: 0;
@@ -186,7 +195,9 @@
             </div>
             <div class="img-yellow-message-bottom-cap"></div>
         </div>
-        <div id='container' ref={this.ref}></div>
+        <div class="videoWrapper">
+			<div id="player"></div>
+		</div>
         <input type="hidden" value="zzzYT-IDzzz" id="videoid" />
         <input type="hidden" value="1" id="imposeboundries" />
         <fieldset>
@@ -246,7 +257,7 @@
                 </div>
             </div>
 			<div class="ctrlGrp">
-				<textarea id="log" style="width: 100%"></textarea>
+                <textarea id="log" style="width: 100%"></textarea>
 			</div>
             <div class="ctrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp debug">Date: Nov 29, 2017</div>
@@ -254,8 +265,25 @@
 
 			<input type="hidden" value="0" id="customPromptVisible" />
         </fieldset>
-        <!-- supermemory.org -->
-        <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js"></script>
+        <div id="speedSlider" style="z-index:2;">
+        <form>
+        <div>
+            <input 
+            type="range" 
+            min=-10
+            max=10
+            value=0
+            id="fader"
+            step=1
+            onchange="outputUpdate(value)"
+            >
+            <span for=fader id=speed>1</span>
+        </div>
+        </form>
+        </div>
+
+        <!-- YAHOO -->
+        <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js" defer onload="setTimeout(loadBindings(),0)"></script>
         
         <!-- <script type="text/javascript" src='http://localhost:8000/node_modules/@babel/polyfill/dist/polyfill.min.js'></script> -->
         <!-- http://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js -->
@@ -265,7 +293,7 @@
         <!-- <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script> -->
 
         <!-- http://unpkg.com/react-player/dist/ReactPlayer.standalone.js -->
-        <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js'></script>
+        <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js' async onload="setTimeout(loadPlayer,0)"></script>
         <script>
             // define a new console
             var console=(function(oldCons){
@@ -283,7 +311,8 @@
                     warn: function (text) {
                         //oldCons.warn(text);
                         // Your code
-                        oLog.innerHTML += '[WARN] ' + text + '\n';                    
+                        oLog.innerHTML += '[WARN] ' + text + '\n';
+                        //alert( '[WARN] ' + text + '\n')                
                     },
                     error: function (text) {
                         //oldCons.error(text);
@@ -298,117 +327,23 @@
 
             window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
                 // Log the error here -- perhaps using an AJAX call
-                console.log(errorMsg);
+                console.error(errorMsg);
             }
-
-            var fOK = function (e) {
-	                var oNewOpt,
-	                    sExtractName = this.getData().extractName,
-	                    oStartAt = document.getElementById("startvideoat"),
-	                    oStopAt = document.getElementById("stopvideoat"),
-	                    sExtractVal = oStartAt.value + " - " + oStopAt.value,
-	                    oExtracts = document.getElementById("extracts"),
-	                    oResumeAt = document.getElementById("resumevideoat"),
-						oCustomPromptVisible = document.getElementById("customPromptVisible");
-
-                    // (1) updates [extracts] menu with a new extract
-                    oNewOpt = new Option(sExtractName, sExtractVal);
-                    oExtracts.options[oExtracts.options.length] = oNewOpt;
-                    oExtracts.selectedIndex = oExtracts.options.length - 1;
-                    oExtracts.disabled = false;
-                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
-                    // (2) sets [resumevideoat] text input to [stopvideoat]
-                    // oResumeAt.value = oStopAt.value;
-                    // (3) sets [startvideoat] text input to EXPERIMENTAL Stop - 1 sec.
-                    oStartAt.value = convertDuration2HHMMSS(convertHHMMSS2Duration(oStopAt.value) - 1);
-                    // (4) resets [stopvideoat] text input
-                    resetAt("stop");
-
-                    oCustomPromptVisible.value = 0;
-
-					if (oCustomPromptVisible.value == 0) {
-						this.hide();
-
-	                    oRKeyListener.enable();
-					}
-                },
-                fCancel = function () {
-					var oCustomPromptVisible = document.getElementById("customPromptVisible");
-
-					oCustomPromptVisible.value = 0;
-
-					if (oCustomPromptVisible.value == 0) {
-						this.cancel();
-
-	                    oRKeyListener.enable();
-					}
-                },
-                oCustomPromptCfg = {
-                    visible: false,
-                    constraintoviewport: true,
-                    context: ["extracts", "bl", "tl"],
-                    width: "auto",
-                    dragOnly: true,
-                    modal: true,
-                    buttons: [
-                        {
-                            text: "OK",
-                            handler: fOK,
-                            isDefault: true
-                        },
-                        {
-                            text: "Cancel",
-                            handler: fCancel
-                        }
-                    ],
-                    postmethod: "none"
-                },
-                oCustomPrompt = new YAHOO.widget.Dialog(
-                    "customPrompt",
-                    oCustomPromptCfg
-                ),
-                oESCKeyListener = new YAHOO.util.KeyListener(
-                    document,
-                    {
-                        keys: YAHOO.util.KeyListener.KEY.ESCAPE
-                    },
-                    {
-                        fn: fCancel,
-                        scope: oCustomPrompt,
-                        correctScope: true
-                    }
-                ),
-                fTurnRepeatOnOff = function () {
-                    var oRepeat = document.getElementById("repeat");
-
-                    if (oRepeat.checked) {
-                        oRepeat.checked = false;
-                    } else {
-                        oRepeat.checked = true;
-                    }
-                },
-                oRKeyListener = new YAHOO.util.KeyListener(
-                    document,
-                    {
-                        keys: 82
-                    },
-                    fTurnRepeatOnOff
-                );
 
             //TODO state loading
             state = {
-            url: null,
-            pip: false,
-            playing: true,
-            controls: false,
-            light: false,
-            volume: 0.8,
-            muted: false,
-            played: 0,
-            loaded: 0,
-            duration: 0,
-            playbackRate: 1.0,
-            loop: false
+                url: null,
+                pip: false,
+                playing: true,
+                controls: false,
+                light: false,
+                volume: 0.8,
+                muted: false,
+                played: 0,
+                loaded: 0,
+                duration: 0,
+                playbackRate: 1.0,
+                loop: false
             }
 
             function setAt(type) {
@@ -428,18 +363,21 @@
                 }
             }
 
+            //sets the *videat to either 0 or current play time
             function resetAt(type) {
                 var oAt = document.getElementById(type + "videoat"),
                     iAt;
-
+                //console.warn("setting " + type + "videoat, cur: " + oAt.value) 
                 switch (type) {
                     case "resume":
                     case "start":
+                        //console.warn("   to zero.")
                         iAt = 0;
                         break;
 
                     case "stop":
                         if (ytplayer) {
+                            //console.warn( "    to the duration: " + ytplayer.getDuration())
                             iAt = parseInt(ytplayer.getDuration());
                         }
                         break;
@@ -449,6 +387,7 @@
                 oAt.style.border = "2px inset";
             }
 
+            //cosmetic
             function updateBorder(inputText) {
                 var sBorderCl = "",
                     iNewVal = convertHHMMSS2Duration(inputText.value);
@@ -461,13 +400,13 @@
                         break;
 
                     case "stop":
-                        if (ytplayer) {
-                            //TODO handle stop
-                            /*if (ytplayer.getPlayerState() >= 1) {
+                        // TODO use of internal player discouraged
+                        if (ytplayer.getInternalPlayer()) {
+                            if (ytplayer.getInternalPlayer().getPlayerState() >= 1) {
                                 if (iNewVal < parseInt(ytplayer.getDuration())) {
                                     sBorderCl = "blue";
                                 }
-                            }*/
+                            }
                         }
                         break;
                 }
@@ -479,68 +418,62 @@
                 }
             }
  
-            function onRenderReady(player){
-                ytplayer = player;
-            }
-
             function handlePlayerReady(player) {
                 ytplayer = player;
 
-                // TODO key handlers
-                var aSelects = document.getElementsByTagName("select");
-
-                oCustomPrompt.cfg.queueProperty("keylisteners", oESCKeyListener);
-                oCustomPrompt.render();
-
-                oRKeyListener.enable();
-
-                for (i = 0, j = aSelects.length; i < j; i++) {
-                    if (!aSelects[i].options.length) {
-                        aSelects[i].disabled = true;
-                    }
-                }
-
-                // ytplayer = document.getElementById("smytplayer");
                 if (1 == document.getElementById("imposeboundries").value) {
                     seekVideo("start");
                 } else {
                     seekVideo("resume");
                 }
+                checkBoundaries();
+            }
+
+            function handlePlay(){
+                oFeedbackOuter = document.getElementById("feedbackOuter");
+                if ("block" == oFeedbackOuter.style.display) {
+                    oFeedbackOuter.style.display = "none";
+                    document.getElementById("feedbackInner").innerHTML = "";
+                }
+            }
+
+            function handlePause(){
+                document.getElementById("imposeboundries").value = 0;
             }
 
             function seekVideo(to) {
                 if (ytplayer) {
+                    //console.log('seeking from ' + ytplayer.getCurrentTime() + ' to ' + convertHHMMSS2Duration(document.getElementById(to + "videoat").value))
                     ytplayer.seekTo(convertHHMMSS2Duration(document.getElementById(to + "videoat").value), 'seconds');
-                    
-					/*
-                    ytplayer.addEventListener("onStateChange", "onytplayerStateChange");
-                    ytplayer.addEventListener("onError", "onPlayerError");
-					*/
                 }
             }
 
-            /*
-            // TODO implement Resume
             function pausePlayer () {
-                renderReactPlayer(container, { url:url, playing: false })
+                //TODO state dynamically
+                //renderReactPlayer(container, { url:url, playing: false })
+                if(ytplayer.getInternalPlayer()){
+                    ytplayer.getInternalPlayer().pauseVideo();
+                }
             }
-
+            
             function playPlayer () {
-                renderReactPlayer(container, { url:url, playing: true })
-            }*/
+                //TODO state dynamically
+                //renderReactPlayer(container, { url:url, playing: true })
+                if(ytplayer.getInternalPlayer()){
+                    ytplayer.getInternalPlayer().playVideo();
+                }
+            }
 
             function resumeVideo() {
                 if (ytplayer) {
-                    //TODO
-                    //playPlayer();
+                    playPlayer();
                     seekVideo('resume');
                 }
             }
 
             function testExtract() {
                 if (ytplayer) {
-                    //TODO
-                    //ytplayer.playVideo();
+                    playPlayer();
                     seekVideo("start");
                     document.getElementById("imposeboundries").value = 1;
                 }
@@ -586,13 +519,14 @@
 
                 sCurrentExtract = oSelect.options[oSelect.selectedIndex].value;
                 aCurrentExtract = sCurrentExtract.split(" - ");
+                //console.log("e Overwriting start " + oStartAt.value + "->" + aCurrentExtract[0])
                 oStartAt.value = aCurrentExtract[0];
                 updateBorder(oStartAt);
                 oStopAt.value = aCurrentExtract[1];
+                //console.log("e Overwriting stop " + oStopAt.value + "->" + aCurrentExtract[1])
                 updateBorder(oStopAt);
                 if (ytplayer) {
-                    //TODO
-                    //ytplayer.playVideo();
+                    playPlayer();
                 }
                 seekVideo("start");
                 document.getElementById("imposeboundries").value = 1;
@@ -614,8 +548,7 @@
 
             function goTo(type) {
                 if (ytplayer) {
-                    //TODO
-                    //ytplayer.playVideo();
+                    playPlayer();
                     seekVideo(type);
                     document.getElementById("imposeboundries").value = 0;
                 }
@@ -677,7 +610,7 @@
                     iDuration,
 					oLog = document.getElementById("log");
 
-                if (ytplayer) {
+                if (ytplayer && ytplayer.getInternalPlayer()) {
                     iDuration = parseInt(ytplayer.getDuration());
                     fCurrentTime = ytplayer.getCurrentTime();
                     oRewindStart.title = sRewindAlt;
@@ -697,77 +630,83 @@
                         oForwardStop.alt = sForwardAlt;
                     }
 
-                    //TODO do I need this start stop vid ID logic (?)
-                    //sCurrentVideoUrl = ytplayer.getVideoUrl();
-                    //sCurrentVideoId = sCurrentVideoUrl.substr(sCurrentVideoUrl.indexOf("v=") + 2, 11);
-                    if ((0 == iResumeAt) 
-                        //|| (sCurrentVideoId != oVideoId.value)
-                        ) {
-                        //oVideoId.value = sCurrentVideoId;
-                        oResumeAt.value = convertDuration2HHMMSS(0);
-                    }
-                    if ((0 == iStartAt) && (0 == iStopAt) 
-                        //|| (sCurrentVideoId != oVideoId.value)
-                        ) {
-                        //oVideoId.value = sCurrentVideoId;
-                        resetAt("start");
-                        resetAt("stop");
-                    }
-                    if (iStartAt > iStopAt) {
-                        if (document.activeElement.id != "stopvideoat") {
+                    //there was a start check here, maybe it depended on code partially running?    
+                    if (-1 != ytplayer.getInternalPlayer().getPlayerState()) {
+                        sCurrentVideoUrl = ytplayer.getInternalPlayer().getVideoUrl();
+                        sCurrentVideoId = sCurrentVideoUrl.substr(sCurrentVideoUrl.indexOf("v=") + 2, 11);
+                        console.log("url " + sCurrentVideoUrl)
+                        console.log("id " + sCurrentVideoId)
+                        //TODO print stuff
+                        if ((0 == iResumeAt) 
+                            || (sCurrentVideoId != oVideoId.value)
+                            ) {
+                            console.log("overriding vid (res set to zero) " + oVideoId.value + " with " + sCurrentVideoId)
+                            oVideoId.value = sCurrentVideoId;
+                            oResumeAt.value = convertDuration2HHMMSS(0);
+                        }
+                        if ((0 == iStartAt) && (0 == iStopAt) 
+                            || (sCurrentVideoId != oVideoId.value)
+                            ) {
+                            console.log("overriding vid (start/stop reset) " + oVideoId.value + " with " + sCurrentVideoId)
+                            oVideoId.value = sCurrentVideoId;
+                            resetAt("start");
                             resetAt("stop");
                         }
-                    }
-                    if (((iStartAt > 0) && (0 == iStopAt)) || ((iStartAt > 0) && (iStopAt > iDuration))) {
+                        console.log("active elem " + document.activeElement.id);
+                        if (iStartAt > iStopAt) {
+                            if (document.activeElement.id != "stopvideoat") {
+                                resetAt("stop");
+                            }
+                        }
+                        if (((iStartAt > 0) && (0 == iStopAt)) || ((iStartAt > 0) && (iStopAt > iDuration))) {
+                            if (document.activeElement.id != "stopvideoat") {
+                                resetAt("stop");
+                            }
+                        }
+                        if (document.activeElement.id != "startvideoat") {
+                            updateBorder(oStartAt);
+                        }
                         if (document.activeElement.id != "stopvideoat") {
-                            resetAt("stop");
+                            updateBorder(oStopAt);
                         }
-                    }
-                    if (document.activeElement.id != "startvideoat") {
-                        updateBorder(oStartAt);
-                    }
-                    if (document.activeElement.id != "stopvideoat") {
-                        updateBorder(oStopAt);
-                    }
-                    if ((iDuration - fCurrentTime) < 1) {
-                        ytplayer.seekTo(iStartAt, 'seconds');
-                        if (!bRepeat) {
-                            //ytplayer.pauseVideo();
-                            //TODO same as pausing?
-                            ytplayer.setState({ playing: false })
+                        if ((iDuration - fCurrentTime) < 1) {
+                            ytplayer.seekTo(iStartAt, 'seconds');
+                            if (!bRepeat) {
+                                pausePlayer();
+                            }
                         }
-                    }
-                    if ((1 == parseInt(oImposeBoundries.value)) && (fCurrentTime >= iStopAt)) {
-                        if (bRepeat) {
-                            seekVideo("start");
-                        } else {
-                            //ytplayer.pauseVideo();
-                            ytplayer.setState({ playing: false })
+                        if ((1 == parseInt(oImposeBoundries.value)) && (fCurrentTime >= iStopAt)) {
+                            if (bRepeat) {
+                                seekVideo("start");
+                            } else {
+                                pausePlayer();                        
+                            }
                         }
                     }
                 }
             }
 
             function handleProgress(state) {
-                console.log('onProgress ' + state);
+                //console.log('onProgress ' + state);
                 // We only want to update time slider if we are not currently seeking
                 if (!ytplayer.state.seeking) {
                     ytplayer.setState(state);
-
                     checkBoundaries();
                 }
             }
 
             function convertDuration2HHMMSS(seconds) {
                 var iDuration = parseInt(seconds),
-                    iTotalMinutes = Math.floor(iDuration / 60),
-                    iHours = Math.floor(iTotalMinutes / 60),
-                    iMinutes = iTotalMinutes % 60,
-                    iSeconds = iDuration % 60;
-
+                iTotalMinutes = Math.floor(iDuration / 60),
+                iHours = Math.floor(iTotalMinutes / 60),
+                iMinutes = iTotalMinutes % 60,
+                iSeconds = iDuration % 60;
+                
                 if (iHours > 0) {
+                    //console.log("converting " + seconds + ' to ' +  iHours + ":" + padZero(iMinutes) + ":" + padZero(iSeconds));
                     return iHours + ":" + padZero(iMinutes) + ":" + padZero(iSeconds);
                 } else {
+                    //console.log("converting " + seconds + ' to ' + iMinutes + ':' + padZero(iSeconds));
                     return iMinutes + ':' + padZero(iSeconds);
                 }
             }
@@ -801,7 +740,21 @@
                         break;
                 }
 
+                //console.log("converting " + time + ' to ' + iTotalSeconds);
                 return iTotalSeconds;
+            }
+
+            function ucfirst( str ) {
+                // http://kevin.vanzonneveld.net
+                // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+                // +   bugfixed by: Onno Marsman
+                // +   improved by: Brett Zamir
+                // *     example 1: ucfirst('kevin van zonneveld');
+                // *     returns 1: 'Kevin van zonneveld'
+
+                str += '';
+                var f = str.charAt(0).toUpperCase();
+                return f + str.substr(1);
             }
 
             var parseUrlQuery = function(urlQuery) {
@@ -824,27 +777,160 @@
             iSecs = 1,
             url,
             container,
-            ytplayer;
+            ytplayer,
+            oCustomPrompt,
+            oRKeyListener;
+            //console.log('?' + (sUrlString.replace("yt.htm","")));
+            //console.log(document.location.search);
+
+            function outputUpdate(val) {
+                sp = 1+(0.1*val);
+                document.getElementById('speed').innerHTML= sp;
+                if(ytplayer.getInternalPlayer()){
+                    ytplayer.getInternalPlayer().setPlaybackRate(sp);
+                }
+            }
+
+            function loadBindings(){
+                var fOK = function (e) {
+	                var oNewOpt,
+	                    sExtractName = this.getData().extractName,
+	                    oStartAt = document.getElementById("startvideoat"),
+	                    oStopAt = document.getElementById("stopvideoat"),
+	                    sExtractVal = oStartAt.value + " - " + oStopAt.value,
+	                    oExtracts = document.getElementById("extracts"),
+	                    oResumeAt = document.getElementById("resumevideoat"),
+						oCustomPromptVisible = document.getElementById("customPromptVisible");
+                    //console.log('' + sExtractName);
+
+                    // (1) updates [extracts] menu with a new extract
+                    oNewOpt = new Option(sExtractName, sExtractVal);
+                    oExtracts.options[oExtracts.options.length] = oNewOpt;
+                    oExtracts.selectedIndex = oExtracts.options.length - 1;
+                    oExtracts.disabled = false;
+                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
+                    // (2) sets [resumevideoat] text input to [stopvideoat]
+                    // oResumeAt.value = oStopAt.value;
+                    // (3) sets [startvideoat] text input to EXPERIMENTAL Stop - 1 sec.
+                    oStartAt.value = convertDuration2HHMMSS(convertHHMMSS2Duration(oStopAt.value) - 1);
+                    // (4) resets [stopvideoat] text input
+                    resetAt("stop");
+
+                    oCustomPromptVisible.value = 0;
+
+					if (oCustomPromptVisible.value == 0) {
+						this.hide();
+
+	                    oRKeyListener.enable();
+					}
+                },
+                fCancel = function () {
+					var oCustomPromptVisible = document.getElementById("customPromptVisible");
+
+					oCustomPromptVisible.value = 0;
+
+					if (oCustomPromptVisible.value == 0) {
+						this.cancel();
+
+	                    oRKeyListener.enable();
+					}
+                },
+                oCustomPromptCfg = {
+                    visible: false,
+                    constraintoviewport: true,
+                    context: ["extracts", "bl", "tl"],
+                    width: "auto",
+                    dragOnly: true,
+                    modal: true,
+                    buttons: [
+                        {
+                            text: "OK",
+                            handler: fOK,
+                            isDefault: true
+                        },
+                        {
+                            text: "Cancel",
+                            handler: fCancel
+                        }
+                    ],
+                    postmethod: "none"
+                },
+                oESCKeyListener = new YAHOO.util.KeyListener(
+                    document,
+                    {
+                        keys: YAHOO.util.KeyListener.KEY.ESCAPE
+                    },
+                    {
+                        fn: fCancel,
+                        scope: oCustomPrompt,
+                        correctScope: true
+                    }
+                ),
+                fTurnRepeatOnOff = function () {
+                    var oRepeat = document.getElementById("repeat");
+
+                    if (oRepeat.checked) {
+                        oRepeat.checked = false;
+                    } else {
+                        oRepeat.checked = true;
+                    }
+                };
+
+                oRKeyListener = new YAHOO.util.KeyListener(
+                    document,
+                    {
+                        keys: 82
+                    },
+                    fTurnRepeatOnOff
+                )
+                oCustomPrompt = new YAHOO.widget.Dialog(
+                    "customPrompt",
+                    oCustomPromptCfg
+                )
+
+                YAHOO.util.Event.addListener(window, "unload", function() {
+					if (ytplayer) {
+						pausePlayer();
+						ytplayer.getInternalPlayer().destroy();
+					}
+				});
+                
+                oCustomPrompt.cfg.queueProperty("keylisteners", oESCKeyListener);
+                oCustomPrompt.render();
+                
+                oRKeyListener.enable();
+
+                var aSelects = document.getElementsByTagName("select");
+
+                for (i = 0, j = aSelects.length; i < j; i++) {
+                    if (!aSelects[i].options.length) {
+                        aSelects[i].disabled = true;
+                    }
+                }
+            }
             
-            document.getElementById("videoid").value = oUrlQuery.videoid;
-            document.getElementById("resumevideoat").value = oUrlQuery.resume;
-            document.getElementById("startvideoat").value = oUrlQuery.start;
-            document.getElementById("stopvideoat").value = oUrlQuery.stop;
+            function loadPlayer(){
+                document.getElementById("videoid").value = oUrlQuery.videoid;
+                document.getElementById("resumevideoat").value = oUrlQuery.resume;
+                document.getElementById("startvideoat").value = oUrlQuery.start;
+                document.getElementById("stopvideoat").value = oUrlQuery.stop;
 
-            container = document.getElementById('container');
-            url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
-            var test = {url:url, 
-                playing:true,
-                //TODO add light toggle
-                //light:true,
-                controls:true,
-                onReady:handlePlayerReady,
-                //onPlay:handlePlay,
-                onProgress:handleProgress,
-            };
+                container = document.getElementById('player');
+                //console.log(oUrlQuery.videoid);
+                url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
+                var test = {url:url, 
+                    playing:true,
+                    //TODO add light toggle
+                    //light:true,
+                    controls:true,
+                    onReady:handlePlayerReady,
+                    onProgress:handleProgress,
+                    onPause:handlePause,
+                    onPlay:handlePlay,
+                };
 
-            renderReactPlayer(container, test);
-            document.getElementById("log").innerHTML += 'debug\n';
+                renderReactPlayer(container, test);
+            }
         </script>
     </body>
 </html>

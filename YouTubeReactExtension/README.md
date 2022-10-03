@@ -5,7 +5,7 @@ SuperMemo YouTube extract performance improvements and extensions.
 
 ## Description
 
-Utilize a locally hosted service to remove remote requirements saving up to 500ms per card and utilize the react-player to extend the functionality of incremental video in SM-18.
+Utilize a locally hosted service to remove remote requirements saving up to 500ms per card and utilize the react-player to extend the functionality of incremental video in SM-18. I now consider this a beta and usable, it wdn't overwrite your cards under expected operation. 
 
 ## Getting Started
 
@@ -45,14 +45,27 @@ sBaseUrl = "http://localhost:8000/yt.htm?"
 
 ## Help
 
-Not currently finished.
+### One of my extract timestamps wiped!?
+
+This can rarely happen if you hold ALT+LEFT or ALT+RIGHT and cycle theough many cards quickly. Ynu may recover the times from the title of the card.
 
 ## Version History
 
-* 0.1 WIP
+* 0.1
     * Mark/Stop/Start buttons work
     * Loading YouTube videos
     * Loads SM scripts locally
+* 0.2 RC
+    * Nonblocking player and hotkeys
+    * Playback speed slider
+### Roadmap
+* Title extract verification for timing overwrite error
+* Pleasing layout
+* Window fullscreen
+* Move functions to seperate file to decrease SM load times
+* Serverside:
+    * Store playback speeds
+    * File-YT proxy for lightning fast plays
 
 ## License
 
