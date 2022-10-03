@@ -196,7 +196,7 @@
             <div class="img-yellow-message-bottom-cap"></div>
         </div>
         <div class="videoWrapper">
-			<div id="player"></div>
+			<div id="bideo"></div>
 		</div>
         <input type="hidden" value="zzzYT-IDzzz" id="videoid" />
         <input type="hidden" value="1" id="imposeboundries" />
@@ -420,6 +420,7 @@
  
             function handlePlayerReady(player) {
                 ytplayer = player;
+                playerElem = document.getElementById("bideo")
 
                 if (1 == document.getElementById("imposeboundries").value) {
                     seekVideo("start");
@@ -453,7 +454,9 @@
                 //renderReactPlayer(container, { url:url, playing: false })
                 if(ytplayer.getInternalPlayer()){
                     ytplayer.getInternalPlayer().pauseVideo();
+                    return true;
                 }
+                return false;
             }
             
             function playPlayer () {
@@ -461,7 +464,9 @@
                 //renderReactPlayer(container, { url:url, playing: true })
                 if(ytplayer.getInternalPlayer()){
                     ytplayer.getInternalPlayer().playVideo();
+                    return true;
                 }
+                return false;
             }
 
             function resumeVideo() {
@@ -501,6 +506,7 @@
 					oCustomPrompt.show();
 
 	                oRKeyListener.disable();
+                    oFKeyListener.disable();
 				}
             }
 
@@ -688,6 +694,7 @@
 
             function handleProgress(state) {
                 //console.log('onProgress ' + state);
+                //console.log(" " + playerElem)
                 // We only want to update time slider if we are not currently seeking
                 if (!ytplayer.state.seeking) {
                     ytplayer.setState(state);
@@ -778,8 +785,10 @@
             url,
             container,
             ytplayer,
+            playerElem,
             oCustomPrompt,
-            oRKeyListener;
+            oRKeyListener,
+            oFKeyListener;
             //console.log('?' + (sUrlString.replace("yt.htm","")));
             //console.log(document.location.search);
 
@@ -822,6 +831,7 @@
 						this.hide();
 
 	                    oRKeyListener.enable();
+	                    oFKeyListener.enable();
 					}
                 },
                 fCancel = function () {
@@ -833,6 +843,7 @@
 						this.cancel();
 
 	                    oRKeyListener.enable();
+                        oFKeyListener.enable();
 					}
                 },
                 oCustomPromptCfg = {
@@ -874,6 +885,16 @@
                     } else {
                         oRepeat.checked = true;
                     }
+                },
+                fTurnFullscreenOn = function () { // TODO f to exit fullscreen
+                    if(ytplayer){
+                        //var video = document.getElementById("movie_player");
+                        var video = document.querySelector('video')
+                        if (video.msRequestFullscreen) {
+                            video.msRequestFullscreen();
+                            //console.log("FS API")
+                        } 
+                    }
                 };
 
                 oRKeyListener = new YAHOO.util.KeyListener(
@@ -883,15 +904,22 @@
                     },
                     fTurnRepeatOnOff
                 )
+                oFKeyListener = new YAHOO.util.KeyListener(
+                    document,
+                    {
+                        keys: 70
+                    },
+                    fTurnFullscreenOn
+                )
+
                 oCustomPrompt = new YAHOO.widget.Dialog(
                     "customPrompt",
                     oCustomPromptCfg
                 )
 
                 YAHOO.util.Event.addListener(window, "unload", function() {
-					if (ytplayer) {
-						pausePlayer();
-						ytplayer.getInternalPlayer().destroy();
+					if (ytplayer && pausePlayer()) {
+                        ytplayer.getInternalPlayer().destroy();
 					}
 				});
                 
@@ -899,6 +927,7 @@
                 oCustomPrompt.render();
                 
                 oRKeyListener.enable();
+                oFKeyListener.enable();
 
                 var aSelects = document.getElementsByTagName("select");
 
@@ -915,7 +944,7 @@
                 document.getElementById("startvideoat").value = oUrlQuery.start;
                 document.getElementById("stopvideoat").value = oUrlQuery.stop;
 
-                container = document.getElementById('player');
+                container = document.getElementById('bideo');
                 //console.log(oUrlQuery.videoid);
                 url = "http://www.youtube.com/v/" + oUrlQuery.videoid;
                 var test = {url:url, 
