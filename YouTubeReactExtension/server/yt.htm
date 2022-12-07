@@ -358,10 +358,9 @@
                     oAt = document.getElementById(type + "videoat");
                     var cur = convertDuration2HHMMSS(iCurrTime);
                     oAt.value = cur;
-                    //if(window.parent.syncElement){
                         var that = window.opener
-                        that.syncElement(that, type + "videoat", cur)
-                    //}
+                        if(that && that.syncElement)
+                            that.syncElement(that, type + "videoat", cur)
                     if (type != "resume") {
                         document.getElementById("imposeboundries").value = 0;
                         updateBorder(oAt);
@@ -391,10 +390,9 @@
 
                 var conv = convertDuration2HHMMSS(iAt);
                 oAt.value = conv
-                //if(window.parent.syncElement){
-                    var that = window.opener
+                var that = window.opener
+                if(that && that.syncElement)
                     that.syncElement(that, type + "videoat", conv)
-                //}
 
                 oAt.style.border = "2px inset";
             }
@@ -522,6 +520,7 @@
 				}
             }
 
+            // carry out seek based on selected extract option
             function feedCurrentExtract(e) {
                 var oEvent = YAHOO.util.Event.getEvent(e),
                     oSelect = document.getElementById("extracts"),
@@ -606,10 +605,9 @@
 
                 var conv = convertDuration2HHMMSS(iNewVal);
                 oAt.value = conv
-                //if(window.parent.syncElement){
-                    var that = window.opener
+                var that = window.opener
+                if(that && that.syncElement)
                     that.syncElement(that, type + "videoat", conv)
-                //}
                 
             }
 
@@ -835,6 +833,11 @@
                     oExtracts.options[oExtracts.options.length] = oNewOpt;
                     oExtracts.selectedIndex = oExtracts.options.length - 1;
                     oExtracts.disabled = false;
+                    
+                    var that = window.opener
+                    if(that && that.syncExtracts)
+                        that.syncExtracts(that, "extracts", sExtractName, sExtractVal);
+
                     document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
                     // (2) sets [resumevideoat] text input to [stopvideoat]
                     // oResumeAt.value = oStopAt.value;

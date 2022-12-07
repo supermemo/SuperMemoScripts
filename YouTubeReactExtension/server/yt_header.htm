@@ -240,6 +240,8 @@
                         <button type="button" id="extract" onclick="addExtract();">Extract</button>
                         <select id="extracts" onchange="feedCurrentExtract();" onclick="feedCurrentExtract();"></select>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
+                        <input type="hidden" value="0" id="customPromptVisible" />
+                        <button type="button" id="reopen" onclick="reopenChWnd();">Reopen</button>
                     </p>
                 </div>
             </div>
@@ -249,8 +251,6 @@
             <div class="ctrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp debug">Date: Nov 29, 2017</div>
             </div>
-
-			<input type="hidden" value="0" id="customPromptVisible" />
         </fieldset>
         <div id="speedSlider" style="z-index:2;">
         <form>
@@ -735,13 +735,6 @@
                     "customPrompt",
                     oCustomPromptCfg
                 )
-
-                /*YAHOO.util.Event.addListener(window, "unload", function() {
-                    alert('destroying')
-					//if (ytplayer && pausePlayer()) {
-                        ytplayer.getInternalPlayer().destroy();
-					//}
-				});*/
                 
                 oCustomPrompt.cfg.queueProperty("keylisteners", oESCKeyListener);
                 oCustomPrompt.render();
@@ -759,14 +752,30 @@
             }
         
         function loadPlayer(){
-                console.log("player loaded")
-                document.getElementById("videoid").value = oUrlQuery.videoid;
-                document.getElementById("resumevideoat").value = oUrlQuery.resume;
-                document.getElementById("startvideoat").value = oUrlQuery.start;
-                document.getElementById("stopvideoat").value = oUrlQuery.stop;
+            console.log("player loaded")
+            document.getElementById("videoid").value = oUrlQuery.videoid;
+            document.getElementById("resumevideoat").value = oUrlQuery.resume;
+            document.getElementById("startvideoat").value = oUrlQuery.start;
+            document.getElementById("stopvideoat").value = oUrlQuery.stop;
+        }
+
+        function reopenChWnd(){
+            if((!ch_wdw) || ch_wdw && ch_wdw.closed){
+                ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
+            }
+            if(ch_wdw)
+                ch_wdw.focus();
         }
 
         loadPlayer();
+
+        if (typeof window.onunload != 'undefined'){
+            function cleanupWindow(){
+                if(ch_wdw && !ch_wdw.closed)
+                    ch_wdw.close();
+            }
+            window.onunload = cleanupWindow;
+        }
 
         </script>
     </body>
