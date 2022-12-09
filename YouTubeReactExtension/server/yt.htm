@@ -76,7 +76,7 @@
                 padding: 5px;
                 border: none;
                 display: block;
-                width: 425px;
+                width: 800px;
             }
 
             p {
@@ -206,32 +206,28 @@
                     <p>
                         <button type="button" id="mark" onclick="setAt('resume');">Mark</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindResume" class="imgBtn rewind" onclick="move('resume', 'rewind');" />
-						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" />
+						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" onclick="setAt('resume');"/>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardResume" class="imgBtn forward" onclick="move('resume', 'forward');" />
 						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" />
                         <button type="button" id="resume" onclick="resumeVideo();">Resume</button>
-                    </p>
-                </div>
-            </div>
-            <div class="ctrlGrp">
-                <div class="ctrlSubgrp firstCtrlSubgrp">
-                    <p>
+                        |
                         <button type="button" id="start" onclick="setAt('start');">Start</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
-                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('start');" />
+                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" onclick="setAt('start');this.select();" ondblclick="resetAt('start');this.select();" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
-                    </p>
-                    <p>
+                        |
                         <button type="button" id="stop" onclick="setAt('stop');">Stop</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
-                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('stop');" />
+                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" onclick="setAt('stop');this.select();" ondblclick="resetAt('stop');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
                     </p>
                 </div>
+            </div>
+            <div class="ctrlGrp">
                 <div class="ctrlSubgrp repeat">
                     <p>
                         <input type="checkbox" checked="checked" id="repeat" class="checkbox" />
@@ -241,15 +237,7 @@
                 <div class="ctrlSubgrp">
                     <p>
                         <button type="button" id="test" onclick="testExtract();">Test</button>
-                    </p>
-                    <p>
                         <button type="button" id="reset" onclick="resetExtract();">Reset</button>
-                    </p>
-                </div>
-            </div>
-            <div class="ctrlGrp">
-                <div class="ctrlSubgrp firstCtrlSubgrp">
-                    <p>
                         <button type="button" id="extract" onclick="addExtract();">Extract</button>
                         <select id="extracts" onchange="feedCurrentExtract();" onclick="feedCurrentExtract();"></select>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
@@ -262,7 +250,6 @@
             <div class="ctrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp debug">Date: Nov 29, 2017</div>
             </div>
-
 			<input type="hidden" value="0" id="customPromptVisible" />
         </fieldset>
         <div id="speedSlider" style="z-index:2;">
@@ -358,9 +345,11 @@
                     oAt = document.getElementById(type + "videoat");
                     var cur = convertDuration2HHMMSS(iCurrTime);
                     oAt.value = cur;
-                        var that = window.opener
-                        if(that && that.syncElement)
-                            that.syncElement(that, type + "videoat", cur)
+
+                    var that = window.opener;
+                    if(that && that.syncElement)
+                        that.syncElement(that, type + "videoat", cur)
+
                     if (type != "resume") {
                         document.getElementById("imposeboundries").value = 0;
                         updateBorder(oAt);
@@ -390,7 +379,7 @@
 
                 var conv = convertDuration2HHMMSS(iAt);
                 oAt.value = conv
-                var that = window.opener
+                var that = window.opener;
                 if(that && that.syncElement)
                     that.syncElement(that, type + "videoat", conv)
 
@@ -529,6 +518,10 @@
                     oStartAt = document.getElementById("startvideoat"),
                     oStopAt = document.getElementById("stopvideoat");
 
+                var that = window.opener;
+                if(that && that.syncExtractsSelect)
+                    that.syncExtractsSelect(that, "extracts", oSelect.selectedIndex); 
+
                 if ((oSelect.options.length > 1) && (oEvent.type == "click")) {
                     YAHOO.util.Event.stopEvent(oEvent);
                     return;
@@ -538,8 +531,12 @@
                 aCurrentExtract = sCurrentExtract.split(" - ");
                 //console.log("e Overwriting start " + oStartAt.value + "->" + aCurrentExtract[0])
                 oStartAt.value = aCurrentExtract[0];
+                var that = window.opener; if(that && that.syncElement)
+                    that.syncElement(that, "startvideoat", aCurrentExtract[0]);
                 updateBorder(oStartAt);
                 oStopAt.value = aCurrentExtract[1];
+                var that = window.opener; if(that && that.syncElement)
+                    that.syncElement(that, "stopvideoat", aCurrentExtract[1]);
                 //console.log("e Overwriting stop " + oStopAt.value + "->" + aCurrentExtract[1])
                 updateBorder(oStopAt);
                 if (ytplayer) {
@@ -551,6 +548,10 @@
             }
 
             function removeCurrentExtract() {
+                var that = window.opener
+                if(that && that.syncExtractsRemove)
+                    that.syncExtractsRemove(that, "extracts");
+                
                 var oExtracts = document.getElementById("extracts"),
                     oCurrentExtract = oExtracts.options[oExtracts.selectedIndex];
 
@@ -834,15 +835,18 @@
                     oExtracts.selectedIndex = oExtracts.options.length - 1;
                     oExtracts.disabled = false;
                     
-                    var that = window.opener
-                    if(that && that.syncExtracts)
-                        that.syncExtracts(that, "extracts", sExtractName, sExtractVal);
+                    var that = window.opener;
+                    if(that && that.syncExtractsAdd)
+                        that.syncExtractsAdd(that, "extracts", sExtractName, sExtractVal);
 
                     document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
                     // (2) sets [resumevideoat] text input to [stopvideoat]
                     // oResumeAt.value = oStopAt.value;
                     // (3) sets [startvideoat] text input to EXPERIMENTAL Stop - 1 sec.
                     oStartAt.value = convertDuration2HHMMSS(convertHHMMSS2Duration(oStopAt.value) - 1);
+                    if(that && that.syncElement)
+                        that.syncElement(that, "startvideoat", oStartAt.value);
+
                     // (4) resets [stopvideoat] text input
                     resetAt("stop");
 

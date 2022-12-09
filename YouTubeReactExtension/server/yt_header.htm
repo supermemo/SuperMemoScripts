@@ -76,7 +76,7 @@
                 padding: 5px;
                 border: none;
                 display: block;
-                width: 425px;
+                width: 750px;
             }
 
             p {
@@ -242,6 +242,7 @@
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
                         <input type="hidden" value="0" id="customPromptVisible" />
                         <button type="button" id="reopen" onclick="reopenChWnd();">Reopen</button>
+                        <button type="button" id="closeBtn" onclick="cleanupWindow();">Close</button>
                     </p>
                 </div>
             </div>
@@ -355,12 +356,32 @@
                 ctx.document.getElementById(id).value = value
             }
 
-            function syncExtracts(ctx, id, sExtractName, sExtractVal) {
+            function syncExtractsAdd(ctx, id, sExtractName, sExtractVal) {
                 oExtracts = ctx.document.getElementById(id);
                 oNewOpt = new Option(sExtractName, sExtractVal);
                 oExtracts.options[oExtracts.options.length] = oNewOpt;
                 oExtracts.selectedIndex = oExtracts.options.length - 1;
                 oExtracts.disabled = false;
+                ctx.document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
+            }
+
+            // emulate behavior between windows as much as possible
+            function syncExtractsRemove(ctx, id) {
+                oExtracts = ctx.document.getElementById(id);
+                oCurrentExtract = oExtracts.options[oExtracts.selectedIndex];
+
+                oExtracts.options[oExtracts.selectedIndex] = null;
+                if (oExtracts.options.length) {
+                    oExtracts.selectedIndex = oExtracts.options.length - 1;
+                } else {
+                    oExtracts.disabled = true;
+                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0";
+                }
+            }
+
+            function syncExtractsSelect(ctx, id, selectedIndex) {
+                oSelect = ctx.document.getElementById(id);
+                oSelect.selectedIndex = selectedIndex;
             }
 
             //sets the *videat to either 0 or current play time
@@ -769,11 +790,12 @@
 
         loadPlayer();
 
+        function cleanupWindow(){
+            if(ch_wdw && !ch_wdw.closed)
+                ch_wdw.close();
+        }
+
         if (typeof window.onunload != 'undefined'){
-            function cleanupWindow(){
-                if(ch_wdw && !ch_wdw.closed)
-                    ch_wdw.close();
-            }
             window.onunload = cleanupWindow;
         }
 
