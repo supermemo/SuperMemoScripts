@@ -49,6 +49,11 @@ Adjust top, left, width and height in sep_embed to adjust screen placement.
 
 - Closing a player with extracts on it and using the Reopen button will result in errors when making even more extracts.
 
+### Differences with vanilla supermemo
+
+- Extract background colour is lost (blue)
+- Clicking fields inserts current time
+
 ## Version History
 
 * 0.1
@@ -74,6 +79,7 @@ Adjust top, left, width and height in sep_embed to adjust screen placement.
     * File-YT proxy for lightning fast plays
 * More shortcuts such as fullscreen, extract setting using keys, etc...
 * Visualize extracts on timeline
+- Enter to OK
 * SupermemoAssistant plugin to re-use player and make a YouTube Jukebox
 * Browser plugin and YouTube player integration
 

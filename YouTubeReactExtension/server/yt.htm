@@ -204,26 +204,26 @@
             <div class="ctrlGrp firstCtrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
-                        <button type="button" id="mark" onclick="setAt('resume');">Mark</button>
+                        <button type="button" id="mark" onclick="setAt('resume');"> [ Mark ]</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindResume" class="imgBtn rewind" onclick="move('resume', 'rewind');" />
-						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" onclick="setAt('resume');"/>
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="resume" class="imgBtn goTo" onclick="resumeVideo();" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardResume" class="imgBtn forward" onclick="move('resume', 'forward');" />
+						<input type="textarea" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" onclick="setAt('resume');" onscroll="console.log('scroll');"/>
 						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" />
-                        <button type="button" id="resume" onclick="resumeVideo();">Resume</button>
                         |
-                        <button type="button" id="start" onclick="setAt('start');">Start</button>
+                        <button type="button" id="start" onclick="setAt('start');" title="Set clip start">[</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
-                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" onclick="setAt('start');this.select();" ondblclick="resetAt('start');this.select();" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
+                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('start');this.select();" ondblclick="resetAt('start');this.select();" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
-                        |
-                        <button type="button" id="stop" onclick="setAt('stop');">Stop</button>
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
-                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" onclick="setAt('stop');this.select();" ondblclick="resetAt('stop');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
+                        ~
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
+                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('stop');this.select();" ondblclick="resetAt('stop');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
+                        <button type="button" id="stop" onclick="setAt('stop');" title="Set clip end">]</button>
                     </p>
                 </div>
             </div>
@@ -334,6 +334,18 @@
                 loop: false
             }
 
+            function imposeBoundaries(value, updateElement){
+                document.getElementById('imposeboundries').value = value; 
+                var that = window.opener;
+                if(that && that.syncElement){
+                    that.syncElement(that, "imposeboundries", value);
+                }
+
+                if(updateElement){
+                    updateBorder(updateElement);
+                }
+            }
+
             function setAt(type) {
                 var oAt,
                     iCurrTime = 0,
@@ -351,8 +363,7 @@
                         that.syncElement(that, type + "videoat", cur)
 
                     if (type != "resume") {
-                        document.getElementById("imposeboundries").value = 0;
-                        updateBorder(oAt);
+                        imposeBoundaries(0, oAt);
                     }
                 }
             }
@@ -412,8 +423,12 @@
 
                 if (sBorderCl.length) {
                     inputText.style.border = "2px solid " + sBorderCl;
+                    var that = window.opener; if (that && that.syncBorder)
+                        that.syncBorder(that, inputText.id, "2px solid " + sBorderCl);
                 } else {
                     inputText.style.border = "2px inset";
+                    var that = window.opener; if (that && that.syncBorder)
+                        that.syncBorder(that, inputText.id, "2px inset");
                 }
             }
  
@@ -434,12 +449,34 @@
                 if ("block" == oFeedbackOuter.style.display) {
                     oFeedbackOuter.style.display = "none";
                     document.getElementById("feedbackInner").innerHTML = "";
+                    var that = window.opener;
+                    if(that && that.syncElement)
+                        that.syncInnerHTML(that, "feedbackInner", "");
                 }
             }
 
             function handlePause(){
-                document.getElementById("imposeboundries").value = 0;
+                imposeBoundaries(0, undefined);
             }
+
+            var arrowListener = function (e) {
+                e = e || window.event;
+
+                var keyCode = e.keyCode || e.which;
+
+                //up
+                var type = e.target.id.replace("videoat","");
+                if(keyCode=='38'){
+                    move(type, 'forward'); 
+                    e.preventDefault();
+                    return false;
+                } else if (keyCode=='40'){
+                    move(type, 'rewind');
+                    e.preventDefault();
+                    return false;
+                }        
+            }
+
 
             function seekVideo(to) {
                 if (ytplayer) {
@@ -479,13 +516,13 @@
                 if (ytplayer) {
                     playPlayer();
                     seekVideo("start");
-                    document.getElementById("imposeboundries").value = 1;
+                    imposeBoundaries(1, undefined);
                 }
             }
 
             function resetExtract() {
                 if (ytplayer) {
-                    document.getElementById("imposeboundries").value = 0;
+                    imposeBoundaries(1, undefined);
                     resetAt("start");
                     resetAt("stop");
                 }
@@ -543,7 +580,7 @@
                     playPlayer();
                 }
                 seekVideo("start");
-                document.getElementById("imposeboundries").value = 1;
+                imposeBoundaries(1, undefined);
                 oSelect.blur();
             }
 
@@ -568,7 +605,7 @@
                 if (ytplayer) {
                     playPlayer();
                     seekVideo(type);
-                    document.getElementById("imposeboundries").value = 0;
+                    imposeBoundaries(0, undefined);
                 }
             }
 
@@ -914,10 +951,9 @@
                 fTurnFullscreenOn = function () { // TODO f to exit fullscreen
                     if(ytplayer){
                         //var video = document.getElementById("movie_player");
-                        var video = document.querySelector('video')
+                        var video = document.querySelector('bideo')
                         if (video.msRequestFullscreen) {
                             video.msRequestFullscreen();
-                            //console.log("FS API")
                         } 
                     }
                 };
@@ -961,7 +997,17 @@
                         aSelects[i].disabled = true;
                     }
                 }
+
+                var inputElem = document.getElementById('startvideoat');
+                inputElem.addEventListener('keydown', arrowListener, false);
+
+                inputElem = document.getElementById('stopvideoat');
+                inputElem.addEventListener('keydown', arrowListener, false);
+
+                inputElem = document.getElementById('resumevideoat');
+                inputElem.addEventListener('keydown', arrowListener, false);
             }
+            
             
             function loadPlayer(){
                 console.log("player loaded")

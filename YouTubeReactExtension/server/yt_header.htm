@@ -356,6 +356,15 @@
                 ctx.document.getElementById(id).value = value
             }
 
+            function syncBorder(ctx, id, value) {
+                ctx.document.getElementById(id).style.border = value;
+            }
+
+            function syncInnerHTML(ctx, id, value) {
+                ctx.document.getElementById(id).innerHTML = value;
+            }
+            
+
             function syncExtractsAdd(ctx, id, sExtractName, sExtractVal) {
                 oExtracts = ctx.document.getElementById(id);
                 oNewOpt = new Option(sExtractName, sExtractVal);
