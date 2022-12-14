@@ -11,7 +11,40 @@
 		<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" />
 		<input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('start');" />
 		<input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('stop');" />
+		<div class="ctrlGrp">
+			<textarea id="log" style="width: 100%"></textarea>
+		</div>
 		<script type="text/javascript">
+			            // define a new console
+            var console=(function(oldCons){
+                var oLog = document.getElementById("log");
+                return {
+                    log: function(text){
+                        //oldCons.log(text);
+                        oLog.innerHTML += '[LOG] ' + text + '\n';                    
+                    },
+                    info: function (text) {
+                        //oldCons.info(text);
+                        // Your code
+                        oLog.innerHTML += '[INFO] ' + text + '\n';                    
+                    },
+                    warn: function (text) {
+                        //oldCons.warn(text);
+                        // Your code
+                        oLog.innerHTML += '[WARN] ' + text + '\n';
+                        //alert( '[WARN] ' + text + '\n')                
+                    },
+                    error: function (text) {
+                        //oldCons.error(text);
+                        // Your code
+                        oLog.innerHTML += '[ERROR] ' + text + '\n';                    
+                    }
+                };
+            }(window.console));
+
+            //Then redefine the old console
+            window.console = console;
+
 			var buildUrlString = function() {
 					var urlString = "",
 						oTs = new Date(),
@@ -33,10 +66,31 @@
 					
 					return urlString;
 				},
+				sProtocol = 'microsoft-edge',
 				sBaseUrl = "http://localhost:8000/yt.htm?",
+				sBaseHeaderUrl = "http://localhost:8000/yt_header.htm?",
 				sUrlString = buildUrlString();
-				
-			document.location.href = sBaseUrl + sUrlString;
-		</script>
+			
+			/*
+			 * Select one of the following default behaviours
+			 * A) Open in SM window (memory leak)
+			 * B) Open in new IE11 window every time
+			 * [unfinished] C) Open in Edge window  
+			 */
+
+			/*  
+			 *	A.
+			 */
+			//document.location.href = sBaseUrl + sUrlString;
+
+			/*  
+			 *	B.
+			 */
+			document.location.href = sBaseHeaderUrl + sUrlString;
+			
+			/*  
+			 *	C.
+			 will use window.open(sProtocol + ':' + sBaseUrl + sUrlString;
+			 */
     </body>
 </html>
