@@ -5,7 +5,7 @@ SuperMemo YouTube extract performance improvements and extensions.
 
 ## Description
 
-Fixes SuperMemo memleaks and slowdowns with a popup window. Utilize a locally hosted service to remove remote requirements saving up to 500ms per card and utilize the react-player to extend the functionality of incremental video in SM-18. I now consider this a beta and usable, it won't overwrite your cards under expected operation. However, I recommend that you backup your collection before starting to use this extension.
+Fixes SuperMemo memleaks and slowdowns with a popup window. Utilize a locally hosted service to remove remote requirements saving up to 500ms per card and utilize the react-player to extend the functionality of incremental video in SM-18. I now consider this a beta and usable, it won't overwrite your cards under expected operation. However, I recommend that you [backup your collection](https://www.supermemo.wiki/en/supermemo/backup-guide) before starting to use this extension.
 
 ![Screenshot](main-screen.png)
 
