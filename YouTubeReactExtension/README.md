@@ -27,6 +27,8 @@ Fixes SuperMemo memleaks and slowdowns with a popup window. Utilize a locally ho
 ```
 python -m SimpleHTTPServer
 
+OR
+
 python3 -m http.server
 
 ```
@@ -44,6 +46,24 @@ This can rarely happen if you hold ALT+LEFT or ALT+RIGHT and cycle theough many 
 ### The Player is too small, out of place, etc..
 
 Adjust top, left, width and height in sep_embed to adjust screen placement.
+
+### Server errors
+
+Instead of using the python standard server, run serveit.py instead. Use the command 
+```
+python serveit.py 8000
+```
+
+### I'm not sure how to use this...
+
+1. Download the zip off github, you'll have a SupermemoScripts zip file. 
+2. Unzip it and go into SuperMemoScripts/YoutubeReactExtension. 
+3. Copy YouTube.htm and paste it in C:/SuperMemo/bin, replacing the existing YouTube.htm. 
+4. Go into the server folder in SuperMemoScripts/YoutubeReactExtension.
+5. Hold shift key and right click, select the menu option "open in terminal". You might have to select the more options menu for it to appear. 
+6. Enter python -m http.server 
+7. If it says Python can't be found, install python from the Microsoft store and repeat from step 5, or try "py", " python3" instead of python.
+Leave the terminal open and restart from step 4. every time you use SM
 
 ### Known bugs
 

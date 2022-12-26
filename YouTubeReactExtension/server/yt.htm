@@ -200,7 +200,7 @@
 		</div>
         <input type="hidden" value="zzzYT-IDzzz" id="videoid" />
         <input type="hidden" value="1" id="imposeboundries" />
-        <fieldset>
+        <fieldset>      
             <div class="ctrlGrp firstCtrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
@@ -244,6 +244,14 @@
                     </p>
                 </div>
             </div>
+            <!-- <button type="button" id="scloud" onclick="loadSoundcloudPlayer();">Soundcloud</button> -->
+            <!-- <button type="button" id="vyp" onclick="loadVidyardPlayer();">Vidyard</button> -->
+            <!-- <button type="button" id="rawmp4" onclick="loadRawPlayer();">MP4</button> -->
+            <!-- <button type="button" id="edge" onclick="openEdge();">Edge</button> -->
+            <button type="button" id="back" onclick="prevElement();" disabled>Back</button>
+            <button type="button" id="learn" onclick="beginLearning();" disabled>Learn</button>
+            <button type="button" id="rep" onclick="nextRep();" disabled>Rep</button>
+            <button type="button" id="fwd" onclick="nextElement();" disabled>Fwd</button>
 			<div class="ctrlGrp">
                 <textarea id="log" style="width: 100%"></textarea>
 			</div>
@@ -318,6 +326,19 @@
                 return true;
             }
 
+            function callAjax(url, callback){
+                var xmlhttp;
+                // compat IE7+, Firefox, Chrome, Opera, Safari
+                xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function(){
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+                        callback(xmlhttp.responseText);
+                    }
+                }
+                xmlhttp.open("GET", url, true);
+                xmlhttp.send();
+            }
+
             //TODO state loading
             state = {
                 url: null,
@@ -333,6 +354,9 @@
                 playbackRate: 1.0,
                 loop: false
             }
+
+            IPC_IP = "localhost";
+            IPC_PORT = "13000";
 
             function imposeBoundaries(value, updateElement){
                 document.getElementById('imposeboundries').value = value; 
@@ -694,8 +718,8 @@
                     if (-1 != ytplayer.getInternalPlayer().getPlayerState()) {
                         sCurrentVideoUrl = ytplayer.getInternalPlayer().getVideoUrl();
                         sCurrentVideoId = sCurrentVideoUrl.substr(sCurrentVideoUrl.indexOf("v=") + 2, 11);
-                        console.log("url " + sCurrentVideoUrl)
-                        console.log("id " + sCurrentVideoId)
+                        //console.log("url " + sCurrentVideoUrl)
+                        //console.log("id " + sCurrentVideoId)
                         //TODO print stuff
                         if ((0 == iResumeAt) 
                             || (sCurrentVideoId != oVideoId.value)
@@ -712,7 +736,7 @@
                             resetAt("start");
                             resetAt("stop");
                         }
-                        console.log("active elem " + document.activeElement.id);
+                        //console.log("active elem " + document.activeElement.id);
                         if (iStartAt > iStopAt) {
                             if (document.activeElement.id != "stopvideoat") {
                                 resetAt("stop");
@@ -902,7 +926,7 @@
 					oCustomPromptVisible.value = 0;
 
 					if (oCustomPromptVisible.value == 0) {
-						this.cancel();
+                        oCustomPrompt.cancel();
 
 	                    oRKeyListener.enable();
                         oFKeyListener.enable();
@@ -939,6 +963,17 @@
                         correctScope: true
                     }
                 ),
+                // oEnterKeyListener = new YAHOO.util.KeyListener(
+                //     document,
+                //     {
+                //         keys: YAHOO.util.KeyListener.KEY.ENTER
+                //     },
+                //     {
+                //         fn: testy,
+                //         scope: oCustomPrompt,
+                //         correctScope: true
+                //     }
+                // ),
                 fTurnRepeatOnOff = function () {
                     var oRepeat = document.getElementById("repeat");
 
@@ -948,7 +983,7 @@
                         oRepeat.checked = true;
                     }
                 },
-                fTurnFullscreenOn = function () { // TODO f to exit fullscreen
+                fTurnFullscreenOn = function () {
                     if(ytplayer){
                         //var video = document.getElementById("movie_player");
                         var video = document.querySelector('bideo')
@@ -985,6 +1020,7 @@
 				});
                 
                 oCustomPrompt.cfg.queueProperty("keylisteners", oESCKeyListener);
+                //oCustomPrompt.cfg.queueProperty("keylisteners", oEnterKeyListener);
                 oCustomPrompt.render();
                 
                 oRKeyListener.enable();
@@ -1007,7 +1043,55 @@
                 inputElem = document.getElementById('resumevideoat');
                 inputElem.addEventListener('keydown', arrowListener, false);
             }
-            
+
+            function loadSoundcloudPlayer(){
+                container = document.getElementById('bideo');
+                url = "https://soundcloud.com/jaytechmusic/jaytech-xmas-beats-2020";
+                //url = "https://video.vidyard.com/watch/aA7PedfQuCAeg69PYkJynj";
+                var test = {url:url, 
+                    playing:true,
+                    controls:true,
+                };
+                renderReactPlayer(container, test);
+            }
+
+            function loadVidyardPlayer(){
+                container = document.getElementById('bideo');
+                //url = "https://soundcloud.com/jaytechmusic/jaytech-xmas-beats-2020";
+                url = "https://video.vidyard.com/watch/aA7PedfQuCAeg69PYkJynj";
+                var test = {url:url, 
+                    playing:true,
+                    controls:true,
+                };
+                renderReactPlayer(container, test);
+            }
+
+            function loadRawPlayer(){
+                container = document.getElementById('bideo');
+                url = "https://samplelib.com/lib/preview/mp4/sample-10s.mp4";
+                var test = {url:url, 
+                    playing:true,
+                    controls:true,
+                };
+                renderReactPlayer(container, test);
+            }
+
+            function openEdge(){
+                window.open('microsoft-edge' + ':' + document.location)
+            }
+
+            function prevElement(){
+                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/element-back");
+            }
+            function beginLearning(){
+                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/begin-learning");
+            }
+            function nextRep(){
+                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/next-repetition");
+            }
+            function nextElement(){
+                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/element-forward");
+            }
             
             function loadPlayer(){
                 console.log("player loaded")
