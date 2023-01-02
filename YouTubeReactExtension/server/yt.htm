@@ -248,10 +248,12 @@
             <!-- <button type="button" id="vyp" onclick="loadVidyardPlayer();">Vidyard</button> -->
             <!-- <button type="button" id="rawmp4" onclick="loadRawPlayer();">MP4</button> -->
             <!-- <button type="button" id="edge" onclick="openEdge();">Edge</button> -->
-            <button type="button" id="back" onclick="prevElement();" disabled>Back</button>
-            <button type="button" id="learn" onclick="beginLearning();" disabled>Learn</button>
-            <button type="button" id="rep" onclick="nextRep();" disabled>Rep</button>
-            <button type="button" id="fwd" onclick="nextElement();" disabled>Fwd</button>
+            <button type="button" id="back" onclick="prevElement();">Back</button>
+            <button type="button" id="learn" onclick="beginLearning();">Learn</button>
+            <button type="button" id="rep" onclick="nextRep();">Rep</button>
+            <button type="button" id="fwd" onclick="nextElement();">Fwd</button>
+            <!-- <button type="button" id="test" onclick="nextElement();">Fwd</button> -->
+
 			<div class="ctrlGrp">
                 <textarea id="log" style="width: 100%"></textarea>
 			</div>
@@ -355,15 +357,15 @@
                 loop: false
             }
 
-            IPC_IP = "localhost";
-            IPC_PORT = "13000";
+            RPC_IP = "localhost";
+            RPC_PORT = "13000";
+            WS_NAME = "jukebox";
+            ws = null;
+            ws_id = 0;
 
             function imposeBoundaries(value, updateElement){
                 document.getElementById('imposeboundries').value = value; 
-                var that = window.opener;
-                if(that && that.syncElement){
-                    that.syncElement(that, "imposeboundries", value);
-                }
+                proxySync('syncElement', ["imposeboundries", value]);
 
                 if(updateElement){
                     updateBorder(updateElement);
@@ -382,9 +384,7 @@
                     var cur = convertDuration2HHMMSS(iCurrTime);
                     oAt.value = cur;
 
-                    var that = window.opener;
-                    if(that && that.syncElement)
-                        that.syncElement(that, type + "videoat", cur)
+                    proxySync('syncElement', [type + "videoat", cur]);
 
                     if (type != "resume") {
                         imposeBoundaries(0, oAt);
@@ -414,9 +414,7 @@
 
                 var conv = convertDuration2HHMMSS(iAt);
                 oAt.value = conv
-                var that = window.opener;
-                if(that && that.syncElement)
-                    that.syncElement(that, type + "videoat", conv)
+                proxySync('syncElement', [type + "videoat", conv]);
 
                 oAt.style.border = "2px inset";
             }
@@ -447,12 +445,10 @@
 
                 if (sBorderCl.length) {
                     inputText.style.border = "2px solid " + sBorderCl;
-                    var that = window.opener; if (that && that.syncBorder)
-                        that.syncBorder(that, inputText.id, "2px solid " + sBorderCl);
+                    proxySync('syncBorder', [inputText.id, "2px solid " + sBorderCl]);
                 } else {
                     inputText.style.border = "2px inset";
-                    var that = window.opener; if (that && that.syncBorder)
-                        that.syncBorder(that, inputText.id, "2px inset");
+                    proxySync('syncBorder', [inputText.id, "2px inset"]);
                 }
             }
  
@@ -473,9 +469,7 @@
                 if ("block" == oFeedbackOuter.style.display) {
                     oFeedbackOuter.style.display = "none";
                     document.getElementById("feedbackInner").innerHTML = "";
-                    var that = window.opener;
-                    if(that && that.syncElement)
-                        that.syncInnerHTML(that, "feedbackInner", "");
+                    proxySync('syncInnerHTML', ["feedbackInner", ""]);
                 }
             }
 
@@ -579,9 +573,7 @@
                     oStartAt = document.getElementById("startvideoat"),
                     oStopAt = document.getElementById("stopvideoat");
 
-                var that = window.opener;
-                if(that && that.syncExtractsSelect)
-                    that.syncExtractsSelect(that, "extracts", oSelect.selectedIndex); 
+                proxySync('syncExtractsSelect', ["extracts", oSelect.selectedIndex]);
 
                 if ((oSelect.options.length > 1) && (oEvent.type == "click")) {
                     YAHOO.util.Event.stopEvent(oEvent);
@@ -592,12 +584,10 @@
                 aCurrentExtract = sCurrentExtract.split(" - ");
                 //console.log("e Overwriting start " + oStartAt.value + "->" + aCurrentExtract[0])
                 oStartAt.value = aCurrentExtract[0];
-                var that = window.opener; if(that && that.syncElement)
-                    that.syncElement(that, "startvideoat", aCurrentExtract[0]);
+                proxySync('syncElement', ["startvideoat", aCurrentExtract[0]]);
                 updateBorder(oStartAt);
                 oStopAt.value = aCurrentExtract[1];
-                var that = window.opener; if(that && that.syncElement)
-                    that.syncElement(that, "stopvideoat", aCurrentExtract[1]);
+                proxySync('syncElement', ["stopvideoat", aCurrentExtract[1]]);
                 //console.log("e Overwriting stop " + oStopAt.value + "->" + aCurrentExtract[1])
                 updateBorder(oStopAt);
                 if (ytplayer) {
@@ -609,9 +599,7 @@
             }
 
             function removeCurrentExtract() {
-                var that = window.opener
-                if(that && that.syncExtractsRemove)
-                    that.syncExtractsRemove(that, "extracts");
+                proxySync('syncExtractsRemove', ["extracts"]);
                 
                 var oExtracts = document.getElementById("extracts"),
                     oCurrentExtract = oExtracts.options[oExtracts.selectedIndex];
@@ -667,9 +655,7 @@
 
                 var conv = convertDuration2HHMMSS(iNewVal);
                 oAt.value = conv
-                var that = window.opener
-                if(that && that.syncElement)
-                    that.syncElement(that, type + "videoat", conv)
+                proxySync('syncElement', [type + "videoat", conv]);
                 
             }
 
@@ -724,14 +710,14 @@
                         if ((0 == iResumeAt) 
                             || (sCurrentVideoId != oVideoId.value)
                             ) {
-                            console.log("overriding vid (res set to zero) " + oVideoId.value + " with " + sCurrentVideoId)
+                            //console.log("overriding vid (res set to zero) " + oVideoId.value + " with " + sCurrentVideoId)
                             oVideoId.value = sCurrentVideoId;
                             oResumeAt.value = convertDuration2HHMMSS(0);
                         }
                         if ((0 == iStartAt) && (0 == iStopAt) 
                             || (sCurrentVideoId != oVideoId.value)
                             ) {
-                            console.log("overriding vid (start/stop reset) " + oVideoId.value + " with " + sCurrentVideoId)
+                            //console.log("overriding vid (start/stop reset) " + oVideoId.value + " with " + sCurrentVideoId)
                             oVideoId.value = sCurrentVideoId;
                             resetAt("start");
                             resetAt("stop");
@@ -896,17 +882,14 @@
                     oExtracts.selectedIndex = oExtracts.options.length - 1;
                     oExtracts.disabled = false;
                     
-                    var that = window.opener;
-                    if(that && that.syncExtractsAdd)
-                        that.syncExtractsAdd(that, "extracts", sExtractName, sExtractVal);
+                    proxySync('syncExtractsAdd', ["extracts", sExtractName, sExtractVal]);
 
                     document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
                     // (2) sets [resumevideoat] text input to [stopvideoat]
                     // oResumeAt.value = oStopAt.value;
                     // (3) sets [startvideoat] text input to EXPERIMENTAL Stop - 1 sec.
                     oStartAt.value = convertDuration2HHMMSS(convertHHMMSS2Duration(oStopAt.value) - 1);
-                    if(that && that.syncElement)
-                        that.syncElement(that, "startvideoat", oStartAt.value);
+                    proxySync('syncElement', ["startvideoat", oStartAt.value]);
 
                     // (4) resets [stopvideoat] text input
                     resetAt("stop");
@@ -1044,6 +1027,34 @@
                 inputElem.addEventListener('keydown', arrowListener, false);
             }
 
+            function proxyRPC(ctx, mcall, args){
+                if(ctx && ctx[mcall]){
+                    ctx[mcall].apply(ctx, args);
+                } 
+            }
+
+            //proxy function calls to the header window
+            function proxySync(mcall, args){
+                //IE detection
+                if (window.document.documentMode){
+                    var that = window.opener;
+                    args.unshift(that);
+                    proxyRPC(that, mcall, args);
+                } else {
+                    if(ws.readyState == 1){
+                        ws.send(JSON.stringify({'jsonrpc':'2.0', method:"WebsocketServerSendClient", 
+                            params:["jukebox","header",mcall,args]}));
+                        return true;
+                    } else if (ws.readyState == 0){
+                        //retry every 100ms until the websocket is open
+                        setTimeout(function(){ return proxySync(mcall, args)}, 100); 
+                    } else {
+                        alert("The window is out of sync.")
+                        return false;
+                    }
+                }
+            }
+
             function loadSoundcloudPlayer(){
                 container = document.getElementById('bideo');
                 url = "https://soundcloud.com/jaytechmusic/jaytech-xmas-beats-2020";
@@ -1080,18 +1091,58 @@
                 window.open('microsoft-edge' + ':' + document.location)
             }
 
+            //TODO reuse WS
             function prevElement(){
-                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/element-back");
+                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+                ws.onopen = function(event) {
+                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcBackButtonClick'}");
+                };
             }
             function beginLearning(){
-                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/begin-learning");
+                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+                ws.onmessage = function(event) {
+                    console.log("type: " + event.type);
+                    console.log("data: " + event.data);
+                };
+                ws.onopen = function(event) {
+                        console.log("type: " + event.type);
+                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcBeginLearning', 'params':[1]}");
+                };
             }
             function nextRep(){
-                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/next-repetition");
+                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+                ws.onopen = function() {
+                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcNextRepetition'}");
+                };
             }
             function nextElement(){
-                callAjax("http://" + IPC_IP + ":" + IPC_PORT + "+" + "/element-forward");
+                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+                ws.onopen = function() {
+                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcForwardButtonClick'}");
+                };
             }
+
+            function setupWebsocket(){
+                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+                ws.onopen = function() {
+                    //
+                };
+                ws.onmessage = function(evt) {
+                    var msg = JSON.parse(evt.data);
+                    console.log("Received message, method: " + msg.method);
+                    proxyRPC(this, msg.method, msg.params);
+                };
+            }
+
+            function registerName(id){
+                console.log("register id: " + id + " name: " + WS_NAME)
+                ws_id = id;
+                ws.send(JSON.stringify({
+                    "jsonrpc": "2.0",
+                    "method": "WebsocketServerRequestName",
+                    "params": [id, WS_NAME]
+                }));
+            }   
             
             function loadPlayer(){
                 console.log("player loaded")
@@ -1099,6 +1150,11 @@
                 document.getElementById("resumevideoat").value = oUrlQuery.resume;
                 document.getElementById("startvideoat").value = oUrlQuery.start;
                 document.getElementById("stopvideoat").value = oUrlQuery.stop;
+                
+                //IE detection
+                if(!window.document.documentMode){
+                    setTimeout(setupWebsocket());
+                }
 
                 container = document.getElementById('bideo');
                 //console.log(oUrlQuery.videoid);

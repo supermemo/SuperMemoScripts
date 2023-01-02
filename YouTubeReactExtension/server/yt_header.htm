@@ -309,6 +309,7 @@
 
             unified_embed = 'location=no,status=no,titlebar=no,left=0,toolbar=no,top=250,width=700,height=400'
             sep_embed = 'location=no,status=no,titlebar=no,left=0,toolbar=no,top=70,width=800,height=600'
+            fullscreen_embed = 'location=no,status=no,titlebar=no,left=0,toolbar=no,top=0,width=1065,height=700'
 
             ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
 
@@ -333,6 +334,12 @@
                 playbackRate: 1.0,
                 loop: false
             }
+
+            RPC_IP = 'localhost';
+            RPC_PORT = '13000';
+            WS_NAME = 'header',
+            ws = null,
+            ws_id = 0;
 
             function setAt(type, parent) {
                 var oAt,
@@ -780,6 +787,55 @@
                     }
                 }
             }
+
+        function syncFailure(){
+            alert("sync failure");
+        }
+
+        function proxyRPC(mcall, args){
+            //console.log("routing remote call: " + mcall + " args: " + args);
+            if(this[mcall]){
+                if(mcall.lastIndexOf("sync", 0) === 0){
+                    if(String(args).indexOf(",") > -1){
+                        args = String(args).split(",");
+                    }
+                    args.unshift(window);
+                }
+                this[mcall].apply(this, args);
+            } else {
+                alert("websocket mcall is undefined");
+            }
+        }
+
+        //called by the websocket server
+        //TODO use rpc library
+        function registerName(id){
+            ws_id = id;
+            ws.send(JSON.stringify({
+                "jsonrpc": "2.0",
+                "method": "WebsocketServerRequestName",
+                "params": [id, WS_NAME]
+            }));
+        }        
+
+        function setupWebsocket(){
+            ws = new WebSocket("ws://" + RPC_IP + ":" + RPC_PORT);
+            ws.onopen = function() {
+                //
+            };
+            ws.onmessage = function (evt) {
+                var received_msg = evt.data;
+                console.log("ws message: " + received_msg);
+                var oMsg = JSON.parse(received_msg);
+
+                if(oMsg.method){
+                    proxyRPC(oMsg.method, oMsg.params);
+                }
+            };
+            ws.onclose = function() {
+                console.log("WebSocket closed")
+            };
+        }
         
         function loadPlayer(){
             console.log("player loaded")
@@ -797,6 +853,7 @@
                 ch_wdw.focus();
         }
 
+        setTimeout(setupWebsocket());
         loadPlayer();
 
         function cleanupWindow(){
