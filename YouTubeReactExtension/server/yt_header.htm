@@ -273,7 +273,10 @@
         <!-- YAHOO -->
         <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js" defer onload="setTimeout(loadBindings,0)"></script>
        
-        <!-- <script src="http://localhost:8000/scripts/polyfill.min.js"></script> -->
+        <script src="http://localhost:8000/scripts/polyfill.min.js"></script>
+
+        <!-- <script src="http://localhost:8000/scripts/simple-jsonrpc-js.min.js"></script> -->
+        <script src="https://cdn.privex.io/lib/simple-jsonrpc/master/simple-jsonrpc-js.min.js"></script>
 
         <!-- <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js' async onload="setTimeout(loadPlayer,0)"></script> -->
         <script>
@@ -311,7 +314,6 @@
             sep_embed = 'location=no,status=no,titlebar=no,left=0,toolbar=no,top=70,width=800,height=600'
             fullscreen_embed = 'location=no,status=no,titlebar=no,left=0,toolbar=no,top=0,width=1065,height=700'
 
-            ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
 
             window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
                 // Log the error here -- perhaps using an AJAX call
@@ -808,32 +810,82 @@
         }
 
         //called by the websocket server
-        //TODO use rpc library
         function registerName(id){
+            console.log("register id: " + id + " name: " + WS_NAME)
             ws_id = id;
-            ws.send(JSON.stringify({
-                "jsonrpc": "2.0",
-                "method": "WebsocketServerRequestName",
-                "params": [id, WS_NAME]
-            }));
         }        
 
-        function setupWebsocket(){
-            ws = new WebSocket("ws://" + RPC_IP + ":" + RPC_PORT);
-            ws.onopen = function() {
-                //
-            };
-            ws.onmessage = function (evt) {
-                var received_msg = evt.data;
-                console.log("ws message: " + received_msg);
-                var oMsg = JSON.parse(received_msg);
+        function openEdge(){
+            window.open('microsoft-edge' + ':' + document.location)
+        }
 
-                if(oMsg.method){
-                    proxyRPC(oMsg.method, oMsg.params);
-                }
+        function setupWebsocket(){
+            jrpc = new simple_jsonrpc();
+            ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
+
+            function cancelWS(){
+                ws.close();
+                ws = null;
+            }
+            ws_timer = setTimeout(cancelWS, 200);
+            ws.onopen = function() {
+                clearTimeout(ws_timer);
+                window.open('microsoft-edge' + ':' + document.location.toString().replace('yt_header','yt'), '_blank', sep_embed);
             };
-            ws.onclose = function() {
-                console.log("WebSocket closed")
+            jrpc.toStream = function(_msg){
+                ws.send(_msg);
+            };
+            //register sync* methods
+            jrpc.on("syncElement", function(id, value){
+                syncElement(window, id, value);
+            });
+            jrpc.on("syncBorder", function(id, value){
+                syncBorder(window, id, value);
+            });
+            jrpc.on("syncInnerHTML", function(id, value){
+                syncInnerHTML(window, id, value);
+            });
+            jrpc.on("syncExtractsAdd", function(id, name, value){
+                syncExtractsAdd(window, id, name, value);
+            });
+            jrpc.on("syncExtractsRemove", function(id){
+                syncExtractsRemove(window, id);
+            });
+            jrpc.on("syncExtractsSelect", function(id, index){
+                syncExtractsSelect(window, id, index);
+            });
+
+            jrpc.on("registerName", function(id){
+                registerName(id);
+                jrpc.call("WebsocketServerRequestName", [id, WS_NAME]).then(function(ok){
+                    if(ok){
+                        console.log("registered name: " + WS_NAME);
+                    } else {
+                        console.log("failed to register name: " + WS_NAME);
+                    }
+                }).catch(function(err){
+                    console.log("failed to register name: " + WS_NAME + " err: " + err);
+                });
+            });
+
+            ws.onerror = function(error) {
+                console.error("Error: " + error.message);
+            };
+            ws.onmessage = function(event) {
+                jrpc.messageHandler(event.data);
+            };
+            //TODO open std window as fallback
+            ws.onclose = function(event) {
+                if (event.wasClean) {
+                    console.info('Connection close was clean');
+                } else {
+                    console.error('Connection suddenly close');
+                }
+                console.info('close code : ' + event.code + ' reason: ' + event.reason);
+                // handle not connected
+                if(event.code == 1006){
+                    ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
+                }
             };
         }
         

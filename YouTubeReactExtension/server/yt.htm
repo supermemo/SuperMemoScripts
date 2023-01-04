@@ -282,9 +282,11 @@
         <!-- YAHOO -->
         <script type="text/javascript" src="http://localhost:8000/scripts/container-min.js" defer onload="setTimeout(loadBindings,0)"></script>
         
-        <!-- <script type="text/javascript" src='http://localhost:8000/node_modules/@babel/polyfill/dist/polyfill.min.js'></script> -->
         <!-- http://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js -->
         <script src="http://localhost:8000/scripts/polyfill.min.js"></script>
+
+        <!-- <script src="http://localhost:8000/scripts/simple-jsonrpc-js.min.js"></script> -->
+        <script src="https://cdn.privex.io/lib/simple-jsonrpc/master/simple-jsonrpc-js.min.js"></script>
 
         <!-- add support for thumbnail frame fetching, TODO -->
         <!-- <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script> -->
@@ -360,8 +362,8 @@
             RPC_IP = "localhost";
             RPC_PORT = "13000";
             WS_NAME = "jukebox";
-            ws = null;
-            ws_id = 0;
+            registered = false;
+            registerQueue = [];
 
             function imposeBoundaries(value, updateElement){
                 document.getElementById('imposeboundries').value = value; 
@@ -1040,10 +1042,22 @@
                     var that = window.opener;
                     args.unshift(that);
                     proxyRPC(that, mcall, args);
+                    return true;
                 } else {
                     if(ws.readyState == 1){
-                        ws.send(JSON.stringify({'jsonrpc':'2.0', method:"WebsocketServerSendClient", 
-                            params:["jukebox","header",mcall,args]}));
+                        if(registered){
+                            //pop the queue and send the messages
+                            while(registerQueue.length > 0){
+                                var element = registerQueue.shift();
+                                console.log("sending queued " + element.mcall + " " + element.args);
+                                jrpc.call(element.mcall, element.args);
+                            }
+                            jrpc.call(mcall, args);
+                        } else {
+                            //create and add to a queue
+                            console.log("queueing " + mcall);
+                            registerQueue.push({mcall:mcall, args:args});
+                        }
                         return true;
                     } else if (ws.readyState == 0){
                         //retry every 100ms until the websocket is open
@@ -1122,26 +1136,64 @@
                 };
             }
 
+            function registerRemote(a, b){
+                jrpc.call("WebsocketServerAddRemoteTarget", [a, b]).then(function(result){
+                    if(result){
+                        console.log("AddRemoteTarget linked to targetId: " + result);
+                        //compare the targetId to the ws_id
+                        if(ws_id && Math.abs(result - ws_id) > 1){
+                            //TODO remove this alert after testing
+                            alert("header jukebox ID mismatch. Close the window and try again.");
+                        } 
+                        registered = true;
+                    } else {
+                        console.log("AddRemoteTarget failed");
+                    }
+                }).catch(function(error){
+                    console.error("AddRemoteTarget error: " + error);
+                });
+            }
+
             function setupWebsocket(){
+                jrpc = new simple_jsonrpc();
                 ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
                 ws.onopen = function() {
                     //
                 };
-                ws.onmessage = function(evt) {
-                    var msg = JSON.parse(evt.data);
-                    console.log("Received message, method: " + msg.method);
-                    proxyRPC(this, msg.method, msg.params);
+                jrpc.toStream = function(_msg){
+                    ws.send(_msg);
+                };
+                jrpc.on("registerName", function(id){
+                    registerName(id);
+                    jrpc.call("WebsocketServerRequestName", [id, WS_NAME]).then(function(ok){
+                        if(ok){
+                            console.log("registered name: " + WS_NAME);
+                            registerRemote( "jukebox", "header");
+                        } else {
+                            console.log("failed to register name: " + WS_NAME);
+                        }
+                    });
+
+                });
+                ws.onerror = function(error) {
+                    console.error("Error: " + error.message);
+                };
+                ws.onmessage = function(event) {
+                    jrpc.messageHandler(event.data);
+                };
+                ws.onclose = function(event) {
+                    if (event.wasClean) {
+                        console.info('Connection close was clean');
+                    } else {
+                        console.error('Connection suddenly close');
+                    }
+                    console.info('close code : ' + event.code + ' reason: ' + event.reason);
                 };
             }
 
             function registerName(id){
                 console.log("register id: " + id + " name: " + WS_NAME)
                 ws_id = id;
-                ws.send(JSON.stringify({
-                    "jsonrpc": "2.0",
-                    "method": "WebsocketServerRequestName",
-                    "params": [id, WS_NAME]
-                }));
             }   
             
             function loadPlayer(){
