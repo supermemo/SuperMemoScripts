@@ -292,7 +292,7 @@
         <!-- <script type="text/javascript" src='http://github.com/github/fetch/releases/download/v3.4.1/fetch.umd.js'></script> -->
 
         <!-- http://unpkg.com/react-player/dist/ReactPlayer.standalone.js -->
-        <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js' async onload="setTimeout(loadPlayer,0)"></script>
+        <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js' async onload="setTimeout(loadPlayer,0, true)"></script>
         <script>
             // define a new console
             var console=(function(oldCons){
@@ -1107,11 +1107,9 @@
 
             //TODO reuse WS
             function prevElement(){
-                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
-                ws.onopen = function(event) {
-                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcBackButtonClick'}");
-                };
+                jrpc.notification('IElementWdwSvcBackButtonClick');
             }
+
             function beginLearning(){
                 ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
                 ws.onmessage = function(event) {
@@ -1130,10 +1128,7 @@
                 };
             }
             function nextElement(){
-                ws = new WebSocket('ws://' + RPC_IP + ':' + String(RPC_PORT));
-                ws.onopen = function() {
-                  ws.send("{'jsonrpc':'2.0', 'method': 'IElementWdwSvcForwardButtonClick'}");
-                };
+                jrpc.notification('IElementWdwSvcForwardButtonClick');
             }
 
             function registerRemote(a, b){
@@ -1143,7 +1138,7 @@
                         //compare the targetId to the ws_id
                         if(ws_id && Math.abs(result - ws_id) > 1){
                             //TODO remove this alert after testing
-                            alert("header jukebox ID mismatch. Close the window and try again.");
+                            //alert("header jukebox ID mismatch. Close the window and try again.");
                         } 
                         registered = true;
                     } else {
@@ -1165,16 +1160,43 @@
                 };
                 jrpc.on("registerName", function(id){
                     registerName(id);
-                    jrpc.call("WebsocketServerRequestName", [id, WS_NAME]).then(function(ok){
-                        if(ok){
-                            console.log("registered name: " + WS_NAME);
-                            registerRemote( "jukebox", "header");
-                        } else {
-                            console.log("failed to register name: " + WS_NAME);
-                        }
-                    });
-
+                    return [WS_NAME, document.location.search];
                 });
+
+                jrpc.on("newClient", function(id, args, aaa){
+                    var name = args[0];
+                    var uri = args[1];
+                    console.log("new client: " + id + " name: " + name + " uri: " + uri);
+                    if(name == WS_NAME){
+                        registerRemote("jukebox", "header");
+                    } else if(name == "header"){
+                        // TODO restart websocket connection instead due to potential bug
+                        // https://github.com/microsoft/vs-streamjsonrpc/issues/878
+
+                        //TODO sync new header and update player
+                        //registerRemote( "header", "jukebox");
+                        //TODO check still synced
+                        //TODO header ever register before jukebox?
+                        registered = false;
+                        registerRemote("jukebox", "header");
+                        //TODO test
+                        oUrlQuery = parseUrlQuery(uri);
+                        loadPlayer(false);
+                    }
+                });
+                jrpc.on("removeClientB", function(id, name){
+                    console.log("remove client: " + id + " name: " + name);
+                    if(name == "header"){
+                        /* A) reuse window
+                        //TODO add non close deregister
+                        registered = false;*/
+                        //TODO disable buttons 
+                        // B) close window
+                        window.close();
+                    }
+                    return true;
+                });
+
                 ws.onerror = function(error) {
                     console.error("Error: " + error.message);
                 };
@@ -1196,7 +1218,7 @@
                 ws_id = id;
             }   
             
-            function loadPlayer(){
+            function loadPlayer(firstrun){
                 console.log("player loaded")
                 document.getElementById("videoid").value = oUrlQuery.videoid;
                 document.getElementById("resumevideoat").value = oUrlQuery.resume;
@@ -1204,7 +1226,7 @@
                 document.getElementById("stopvideoat").value = oUrlQuery.stop;
                 
                 //IE detection
-                if(!window.document.documentMode){
+                if(!window.document.documentMode && firstrun){
                     setTimeout(setupWebsocket());
                 }
 
@@ -1224,6 +1246,13 @@
 
                 renderReactPlayer(container, test);
             }
+
+            window.onbeforeunload = function() {
+                if(ws && ws.readyState == 1){
+                    ws.close();
+                }
+                return null;
+            };
         </script>
     </body>
 </html>

@@ -191,29 +191,29 @@
             <div class="ctrlGrp firstCtrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
-                        <button type="button" id="mark" onclick="setAt('resume');">Mark</button>
+                        <button type="button" id="mark" onclick="setAt('resume');" disabled>Mark</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindResume" class="imgBtn rewind" onclick="move('resume', 'rewind');" />
-						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" />
+						<input type="text" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" disabled/>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardResume" class="imgBtn forward" onclick="move('resume', 'forward');" />
 						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" />
-                        <button type="button" id="resume" onclick="resumeVideo();">Resume</button>
+                        <button type="button" id="resume" onclick="resumeVideo();" disabled>Resume</button>
                     </p>
                 </div>
             </div>
             <div class="ctrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
-                        <button type="button" id="start" onclick="setAt('start');">Start</button>
+                        <button type="button" id="start" onclick="setAt('start');" disabled>Start</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
-                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('start');" />
+                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('start');" disabled/>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
                     </p>
                     <p>
-                        <button type="button" id="stop" onclick="setAt('stop');">Stop</button>
+                        <button type="button" id="stop" onclick="setAt('stop');" disabled>Stop</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
-                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('stop');" />
+                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); document.getElementById('imposeboundries').value = 0; updateBorder(this);" ondblclick="resetAt('stop');" disabled/>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
@@ -227,17 +227,17 @@
                 </div>
                 <div class="ctrlSubgrp">
                     <p>
-                        <button type="button" id="test" onclick="testExtract();">Test</button>
+                        <button type="button" id="test" onclick="testExtract();" disabled>Test</button>
                     </p>
                     <p>
-                        <button type="button" id="reset" onclick="resetExtract();">Reset</button>
+                        <button type="button" id="reset" onclick="resetExtract();" disabled>Reset</button>
                     </p>
                 </div>
             </div>
             <div class="ctrlGrp">
                 <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
-                        <button type="button" id="extract" onclick="addExtract();">Extract</button>
+                        <button type="button" id="extract" onclick="addExtract();" disabled>Extract</button>
                         <select id="extracts" onchange="feedCurrentExtract();" onclick="feedCurrentExtract();"></select>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
                         <input type="hidden" value="0" id="customPromptVisible" />
@@ -342,6 +342,7 @@
             WS_NAME = 'header',
             ws = null,
             ws_id = 0;
+            ch_wdw = null; 
 
             function setAt(type, parent) {
                 var oAt,
@@ -830,7 +831,7 @@
             ws_timer = setTimeout(cancelWS, 200);
             ws.onopen = function() {
                 clearTimeout(ws_timer);
-                window.open('microsoft-edge' + ':' + document.location.toString().replace('yt_header','yt'), '_blank', sep_embed);
+                //window.open('microsoft-edge' + ':' + document.location.toString().replace('yt_header','yt'), '_blank', sep_embed);
             };
             jrpc.toStream = function(_msg){
                 ws.send(_msg);
@@ -856,18 +857,31 @@
             });
 
             jrpc.on("registerName", function(id){
-                registerName(id);
-                jrpc.call("WebsocketServerRequestName", [id, WS_NAME]).then(function(ok){
-                    if(ok){
-                        console.log("registered name: " + WS_NAME);
-                    } else {
-                        console.log("failed to register name: " + WS_NAME);
-                    }
-                }).catch(function(err){
-                    console.log("failed to register name: " + WS_NAME + " err: " + err);
-                });
+                registerName(id);                
+                return [WS_NAME, String(document.location.search)];
             });
 
+            jrpc.on("newClient", function(id, args, aaa){
+                var name = args[0];
+                var url = args[1];
+                console.log("new client: " + id + " name: " + name  + " url: " + url);
+                //TODO do this ASAP to make opening the window faster
+                if(name == WS_NAME){
+                    // A) always open a new window
+                    window.open('microsoft-edge' + ':' + document.location.toString().replace('yt_header','yt'), '_blank', sep_embed);
+                    // B) open a new window if the current one DNE
+                }
+            });
+
+            jrpc.on("removeClientB", function(id, name){
+                console.log("remove client: " + id + " name: " + name);
+                if(name == "jukebox"){
+                    alert("Jukebox closed");
+                } else {
+                    alert("this should not happen");
+                }
+            });
+                
             ws.onerror = function(error) {
                 console.error("Error: " + error.message);
             };
@@ -884,6 +898,7 @@
                 console.info('close code : ' + event.code + ' reason: ' + event.reason);
                 // handle not connected
                 if(event.code == 1006){
+                    ch_wdw = null;
                     ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
                 }
             };
@@ -899,6 +914,7 @@
 
         function reopenChWnd(){
             if((!ch_wdw) || ch_wdw && ch_wdw.closed){
+                ch_wdw = null;
                 ch_wdw = window.open(document.location.toString().replace('yt_header','yt'), '_blank', sep_embed)
             }
             if(ch_wdw)
@@ -911,6 +927,9 @@
         function cleanupWindow(){
             if(ch_wdw && !ch_wdw.closed)
                 ch_wdw.close();
+            if(ws && ws.readyState == 1 && ws_id != 0){
+                ws.close()
+            }
         }
 
         if (typeof window.onunload != 'undefined'){

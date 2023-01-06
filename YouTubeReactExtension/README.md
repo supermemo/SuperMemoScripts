@@ -54,6 +54,11 @@ Instead of using the python standard server, run serveit.py instead. Use the com
 python serveit.py 8000
 ```
 
+### SecurityError
+
+If you get a security error, you may need to increase the number of allowed connections in your browser. Link to a SO post for IE on how to do this for WebSockets: https://stackoverflow.com/a/56889101
+
+
 ### I'm not sure how to use this...
 
 1. Download the zip off github, you'll have a SupermemoScripts zip file. 
