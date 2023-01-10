@@ -108,6 +108,11 @@
                 height: 3.6em;
             }
 
+            #repeat {
+                width: 1em;
+                display: inline-block;
+            }
+
             button, input {
                 width: 5em;
             }
@@ -228,10 +233,10 @@
                 </div>
             </div>
             <div class="ctrlGrp">
-                <div class="ctrlSubgrp repeat">
+                <div class="ctrlSubgrp">
                     <p>
                         <input type="checkbox" checked="checked" id="repeat" class="checkbox" />
-                        <label for="repeat" title="Repeat (R)">&nbsp;</label>
+                        <label for="repeat" id="repeat" title="Repeat (R)">&nbsp;</label>
                     </p>
                 </div>
                 <div class="ctrlSubgrp">
@@ -243,15 +248,32 @@
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
                     </p>
                 </div>
+                <div class="ctrlSubgrp">
+                    <p>
+                        <button type="button" class="wsenable" id="back" onclick="prevElement();" disabled><--</button>
+                        <button type="button" class="wsenable" id="learn" onclick="beginLearning();" disabled>Learn</button>
+                        <button type="button" class="wsenable" id="rep" onclick="nextRep();" disabled>Rep</button>
+                        <button type="button" class="wsenable" id="fwd" onclick="nextElement();" disabled>--></button>
+                    </p>
+                </div>
             </div>
+            <div class="ctrlGrp">
+                <div class="ctrlSubgrp">
+                    <p>
+                        <button type="button" class="wsenable" id="dismiss" onclick="dismissElement();" disabled>Dismiss</button>
+                    </p>
+                </div>
+                <div class="ctrlSubgrp">
+                    <p>
+                    
+                    </p>
+                </div>
+            </div>  
             <!-- <button type="button" id="scloud" onclick="loadSoundcloudPlayer();">Soundcloud</button> -->
             <!-- <button type="button" id="vyp" onclick="loadVidyardPlayer();">Vidyard</button> -->
             <!-- <button type="button" id="rawmp4" onclick="loadRawPlayer();">MP4</button> -->
             <!-- <button type="button" id="edge" onclick="openEdge();">Edge</button> -->
-            <button type="button" id="back" onclick="prevElement();">Back</button>
-            <button type="button" id="learn" onclick="beginLearning();">Learn</button>
-            <button type="button" id="rep" onclick="nextRep();">Rep</button>
-            <button type="button" id="fwd" onclick="nextElement();">Fwd</button>
+
             <!-- <button type="button" id="test" onclick="nextElement();">Fwd</button> -->
 
 			<div class="ctrlGrp">
@@ -363,6 +385,7 @@
             RPC_PORT = "13000";
             WS_NAME = "jukebox";
             registered = false;
+            betweenRedirect = false;
             registerQueue = [];
             ws = null;
 
@@ -456,6 +479,7 @@
             }
  
             function handlePlayerReady(player) {
+                betweenRedirect = false;
                 ytplayer = player;
                 playerElem = document.getElementById("bideo")
 
@@ -1054,7 +1078,7 @@
                                 jrpc.call(element.mcall, element.args);
                             }
                             jrpc.call(mcall, args);
-                        } else {
+                        } else if(!betweenRedirect){
                             //create and add to a queue
                             console.log("queueing " + mcall);
                             registerQueue.push({mcall:mcall, args:args});
@@ -1110,7 +1134,6 @@
             function prevElement(){
                 jrpc.notification('IElementWdwSvcBackButtonClick');
             }
-
             function beginLearning(){
                 jrpc.notification('IElementWdwSvcBeginLearning');
             }
@@ -1119,6 +1142,17 @@
             }
             function nextElement(){
                 jrpc.notification('IElementWdwSvcForwardButtonClick');
+            }
+            function dismissElement(){
+                jrpc.call('IElementWdwSvcGetCurrentElementId').then(function(id){
+                    if(id){
+                        jrpc.call('IElementWdwSvcDismissElement', [id]).then(function(result){
+                            if(result){
+                                // TODO disable rep button
+                            }
+                        });
+                    }
+                });
             }
 
             function registerRemote(a, b){
@@ -1131,12 +1165,20 @@
                             //alert("header jukebox ID mismatch. Close the window and try again.");
                         } 
                         registered = true;
+                        toggleButtonDisabled("wsenable", false);
                     } else {
                         console.log("AddRemoteTarget failed");
                     }
                 }).catch(function(error){
                     console.error("AddRemoteTarget error: " + error);
                 });
+            }
+
+            function toggleButtonDisabled(class_name, state){
+                var aButtons = document.getElementsByClassName(class_name);
+                for (i = 0; i < aButtons.length; i++) {
+                    aButtons[i].disabled = state;
+                }
             }
 
             function setupWebsocket(){
@@ -1183,7 +1225,8 @@
                         // A) reuse window
                         //TODO add non close deregister
                         registered = false;
-                        //TODO disable buttons 
+                        betweenRedirect = true;
+                        toggleButtonDisabled("wsenable", true);
 
                         // B) close window
                         //window.close();

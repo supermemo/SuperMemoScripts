@@ -829,6 +829,7 @@
                 ws.close();
                 ws = null;
             }
+            //TODO timeout according to network latency
             ws_timer = setTimeout(cancelWS, 200);
             ws.onopen = function() {
                 clearTimeout(ws_timer);
