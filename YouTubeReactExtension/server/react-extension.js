@@ -7,7 +7,8 @@
     see: https://help.supermemo.org/wiki/Incremental_video#Your_own_incremental_video_script
     Symptoms of failure to do this: extract start nd stop times are rotated incorrctly (start becomes stop)
 -->
-<html><head>
+<html>
+    <head>
     <meta http-equiv="content-type" content="text/html; charset=windows-1252">
         <meta content="IE=11.0000" http-equiv="X-UA-Compatible">
         <style type="text/css">
@@ -254,10 +255,10 @@
                 </div>
                 <div class="ctrlSubgrp">
                     <p>
-                        <button type="button" class="wsenable" id="back" onclick="prevElement();" disabled><--</button>
+                        <button type="button" class="wsenable" id="back" onclick="prevElement();" disabled>&lt;--</button>
                         <button type="button" class="wsenable" id="learn" onclick="beginLearning();" disabled>Learn</button>
                         <button type="button" class="wsenable" id="rep" onclick="nextRep();" disabled>Rep</button>
-                        <button type="button" class="wsenable" id="fwd" onclick="nextElement();" disabled>--></button>
+                        <button type="button" class="wsenable" id="fwd" onclick="nextElement();" disabled>--&gt;</button>
                     </p>
                 </div>
             </div>
