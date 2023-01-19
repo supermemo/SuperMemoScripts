@@ -1,29 +1,33 @@
 // define a new console
-var console=(function(oldCons){
-    var oLog = document.getElementById("log");
-    return {
-        log: function(text){
-            //oldCons.log(text);
-            oLog.innerHTML += '[LOG] ' + text + '\n';                    
-        },
-        info: function (text) {
-            //oldCons.info(text);
-            // Your code
-            oLog.innerHTML += '[INFO] ' + text + '\n';                    
-        },
-        warn: function (text) {
-            //oldCons.warn(text);
-            // Your code
-            oLog.innerHTML += '[WARN] ' + text + '\n';
-            //alert( '[WARN] ' + text + '\n')                
-        },
-        error: function (text) {
-            //oldCons.error(text);
-            // Your code
-            oLog.innerHTML += '[ERROR] ' + text + '\n';                    
-        }
-    };
-}(window.console));
+//IE detection
+var isIE = false || !!document.documentMode;
+if (isIE) {
+    var console=(function(oldCons){
+        var oLog = document.getElementById("log");
+        return {
+            log: function(text){
+                //oldCons.log(text);
+                oLog.innerHTML += '[LOG] ' + text + '\n';                    
+            },
+            info: function (text) {
+                //oldCons.info(text);
+                // Your code
+                oLog.innerHTML += '[INFO] ' + text + '\n';                    
+            },
+            warn: function (text) {
+                //oldCons.warn(text);
+                // Your code
+                oLog.innerHTML += '[WARN] ' + text + '\n';
+                //alert( '[WARN] ' + text + '\n')                
+            },
+            error: function (text) {
+                //oldCons.error(text);
+                // Your code
+                oLog.innerHTML += '[ERROR] ' + text + '\n';                    
+            }
+        };
+    }(window.console));
+}
 
 //Then redefine the old console
 window.console = console;
@@ -80,7 +84,7 @@ function imposeBoundaries(value, updateElement){
     }
 }
 
-function setAt(type) {
+function setAt(type, offset, sync) {
     var oAt,
         iCurrTime = 0,
         iDuration = 0;
@@ -89,10 +93,11 @@ function setAt(type) {
         iCurrTime = parseInt(ytplayer.getCurrentTime());
         iDuration = parseInt(ytplayer.getDuration());
         oAt = document.getElementById(type + "videoat");
-        var cur = convertDuration2HHMMSS(iCurrTime);
+        var cur = convertDuration2HHMMSS(iCurrTime + offset);
         oAt.value = cur;
 
-        proxySync('syncElement', [type + "videoat", cur]);
+        if(sync)
+            proxySync('syncElement', [type + "videoat", cur]);
 
         if (type != "resume") {
             imposeBoundaries(0, oAt);
@@ -255,7 +260,15 @@ function resetExtract() {
     }
 }
 
-function addExtract() {
+function addExtract(offset) {
+    if(offset < 0){
+        setAt("start", offset, false);
+        setAt("stop", 0, false);
+    } else if (offset > 0){
+        setAt("start", 0, false);
+        setAt("stop", offset);
+    }
+
     var oCustomPromptVisible = document.getElementById("customPromptVisible"),
         oExtracts = document.getElementById("extracts"),
         iNextExtractNo = (!oExtracts.options.length) ? 1 : oExtracts.options.length + 1,
@@ -270,6 +283,8 @@ function addExtract() {
 
         oRKeyListener.disable();
         oFKeyListener.disable();
+
+        pausePlayer();
     }
 }
 
@@ -611,6 +626,7 @@ function loadBindings(){
             oRKeyListener.enable();
             oFKeyListener.enable();
         }
+        playPlayer();
     },
     fCancel = function () {
         var oCustomPromptVisible = document.getElementById("customPromptVisible");
@@ -622,6 +638,7 @@ function loadBindings(){
 
             oRKeyListener.enable();
             oFKeyListener.enable();
+            playPlayer();
         }
     },
     oCustomPromptCfg = {
@@ -956,7 +973,7 @@ function loadPlayer(firstrun){
 
     var config = {
         youtube: {
-            playerVars: { start: start_s, color:'white' }
+            playerVars: { start: start_s}
         },
     };
     var react_config = {url:url, 
