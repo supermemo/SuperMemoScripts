@@ -284,6 +284,8 @@
         <script src="https://cdn.privex.io/lib/simple-jsonrpc/master/simple-jsonrpc-js.min.js"></script>
 
         <!-- <script type="text/javascript" src='http://localhost:8000/scripts/ReactPlayer.standalone.js' async onload="setTimeout(loadPlayer,0)"></script> -->
+        
+        <script trpe="text/javascript" src="http://localhost:8000/sync.js"></script>
         <script>
             // define a new console
             var console=(function(oldCons){
@@ -365,47 +367,6 @@
                         updateBorder(oAt);
                     }
                 }
-            }
-
-            function syncElement(ctx, id, value) {
-                ctx.document.getElementById(id).value = value
-            }
-
-            function syncBorder(ctx, id, value) {
-                ctx.document.getElementById(id).style.border = value;
-            }
-
-            function syncInnerHTML(ctx, id, value) {
-                ctx.document.getElementById(id).innerHTML = value;
-            }
-            
-
-            function syncExtractsAdd(ctx, id, sExtractName, sExtractVal) {
-                oExtracts = ctx.document.getElementById(id);
-                oNewOpt = new Option(sExtractName, sExtractVal);
-                oExtracts.options[oExtracts.options.length] = oNewOpt;
-                oExtracts.selectedIndex = oExtracts.options.length - 1;
-                oExtracts.disabled = false;
-                ctx.document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0";
-            }
-
-            // emulate behavior between windows as much as possible
-            function syncExtractsRemove(ctx, id) {
-                oExtracts = ctx.document.getElementById(id);
-                oCurrentExtract = oExtracts.options[oExtracts.selectedIndex];
-
-                oExtracts.options[oExtracts.selectedIndex] = null;
-                if (oExtracts.options.length) {
-                    oExtracts.selectedIndex = oExtracts.options.length - 1;
-                } else {
-                    oExtracts.disabled = true;
-                    document.getElementById("removeCurrentExtract").style.background = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0";
-                }
-            }
-
-            function syncExtractsSelect(ctx, id, selectedIndex) {
-                oSelect = ctx.document.getElementById(id);
-                oSelect.selectedIndex = selectedIndex;
             }
 
             //sets the *videat to either 0 or current play time
@@ -798,21 +759,6 @@
 
         function syncFailure(){
             console.warn("sync failure");
-        }
-
-        function proxyRPC(mcall, args){
-            //console.log("routing remote call: " + mcall + " args: " + args);
-            if(this[mcall]){
-                if(mcall.lastIndexOf("sync", 0) === 0){
-                    if(String(args).indexOf(",") > -1){
-                        args = String(args).split(",");
-                    }
-                    args.unshift(window);
-                }
-                this[mcall].apply(this, args);
-            } else {
-                console.warn("websocket mcall is undefined");
-            }
         }
 
         //called by the websocket server

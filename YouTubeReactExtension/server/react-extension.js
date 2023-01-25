@@ -74,6 +74,7 @@ registered = false;
 betweenRedirect = false;
 registerQueue = [];
 ws = null;
+PLAYER_IFRAME_ID = "widget2";
 
 function imposeBoundaries(value, updateElement){
     document.getElementById('imposeboundries').value = value; 
@@ -768,6 +769,7 @@ function proxySync(mcall, args){
         proxyRPC(that, mcall, args);
         return true;
     } else {
+        setTimeout(syncIframe, 0, mcall, args);
         if(ws.readyState == 1){
             if(registered){
                 //pop the queue and send the messages
@@ -789,6 +791,26 @@ function proxySync(mcall, args){
         } else {
             alert("The window is out of sync.")
             return false;
+        }
+    }
+}
+
+//react-extension.js is the core logic, so we sync calls to listening windows
+function syncIframe(mcall, args){
+    if(args[0]){
+        //check if args[0] is an element id
+        let element = document.getElementById(args[0]);
+        if(element){
+            args[0] = "yt-" + element.id;
+        }       
+    }
+
+    //try to send to youtube iframe [extension]
+    let iframe = document.getElementById(PLAYER_IFRAME_ID);
+    if(iframe){
+        let iframeWindow = iframe.contentWindow;
+        if(iframeWindow){
+            iframeWindow.postMessage(JSON.stringify({type:mcall, args:args}), "*");
         }
     }
 }
@@ -994,3 +1016,15 @@ window.onbeforeunload = function() {
         ws.close();
     }
 };
+
+//TODO is this needed?
+window.addEventListener("message", function(event) {
+    if(event.origin !== "https://www.youtube.com"){
+        return;
+    }
+    var data = JSON.parse(event.data);
+    if(window[data.type]){
+        data.args = data.args || [];
+        window[data.type](data.args);
+    }
+});
