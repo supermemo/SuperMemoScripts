@@ -216,35 +216,36 @@
                     <p>
                         <button type="button" id="mark" onclick="setAt('resume', 0, true);"> [ Mark ]</button>
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindResume" class="imgBtn rewind" onclick="move('resume', 'rewind');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="resume" class="imgBtn goTo" onclick="resumeVideo();" />
+                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="resume" class="imgBtn goTo" onclick="goTo('resume');" />
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardResume" class="imgBtn forward" onclick="move('resume', 'forward');" />
 						<input type="textarea" value="0:00:00" id="resumevideoat" onfocus="this.select();" ondblclick="resetAt('resume');" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));" onclick="setAt('resume', 0, true);" onscroll="console.log('scroll');"/>
-						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" />
-                        |
-                        <button type="button" id="start" onclick="setAt('start', 0, true);" title="Set clip start">[</button>
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
-                        <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('start', 0, true);this.select();" ondblclick="resetAt('start');this.select();" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
-                        ~
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
-                        <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('stop', 0, true);this.select();" ondblclick="resetAt('stop');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
-                        <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
-                        <button type="button" id="stop" onclick="setAt('stop', 0, true);" title="Set clip end">]</button>
+						<img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreResumeAt" class="imgBtn restoreStartAt" onclick="resetAt('resume');" /> 
                     </p>
                 </div>
+                <div class="ctrlSubgrp secondCtrlSubgrp">
+                    <button type="button" id="start" onclick="setAt('start', 0, true);" title="Set clip start">[</button>
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStart" class="imgBtn rewind" onclick="move('start', 'rewind');" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStart" class="imgBtn goTo" onclick="goTo('start');" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStart" class="imgBtn forward" onclick="move('start', 'forward');" />
+                    <input type="text" value="0:00:00" id="startvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('start', 0, true);this.select();" ondblclick="resetAt('start');this.select();" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStartAt" class="imgBtn restoreStartAt" onclick="resetAt('start');" />
+                    ~
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="Restore default" title="Restore default" id="restoreStopAt" class="imgBtn restoreStopAt" onclick="resetAt('stop');" />
+                    <input type="text" value="0:00:00" id="stopvideoat" onfocus="this.select();" onchange="this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value)); var that = this; imposeBoundaries(0, that);" onclick="setAt('stop', 0, true);this.select();" ondblclick="resetAt('stop');" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="rewindStop" class="imgBtn rewind" onclick="move('stop', 'rewind');" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="Go to" title="Go to" id="goToStop" class="imgBtn goTo" onclick="goTo('stop');" />
+                    <img src="http://localhost:8000/iv/images/transparent.png" alt="" id="forwardStop" class="imgBtn forward" onclick="move('stop', 'forward');" />
+                    <button type="button" id="stop" onclick="setAt('stop', 0, true);" title="Set clip end">]</button>
+                </div>
             </div>
-            <div class="ctrlGrp">
-                <div class="ctrlSubgrp">
+            <div class="ctrlGrp secondCtrlGrp">
+                <div class="ctrlSubgrp firstCtrlSubgrp">
                     <p>
                         <input type="checkbox" checked="checked" id="repeat" class="checkbox" />
                         <label for="repeat" id="repeat" title="Repeat (R)">&nbsp;</label>
                     </p>
                 </div>
-                <div class="ctrlSubgrp">
+                <div class="ctrlSubgrp secondCtrlSubgrp">
                     <p>
                         <button type="button" id="test" onclick="testExtract();">Test</button>
                         <button type="button" id="reset" onclick="resetExtract();">Reset</button>
@@ -253,7 +254,7 @@
                         <img src="http://localhost:8000/iv/images/transparent.png" alt="Remove the currently selected extract" id="removeCurrentExtract" class="imgBtn removeCurrentExtract" onclick="removeCurrentExtract();" />
                     </p>
                 </div>
-                <div class="ctrlSubgrp">
+                <div class="ctrlSubgrp thirdCtrlSubgrp">
                     <p>
                         <button type="button" class="wsenable" id="back" onclick="prevElement();" disabled>&lt;--</button>
                         <button type="button" class="wsenable" id="learn" onclick="beginLearning();" disabled>Learn</button>
@@ -270,7 +271,7 @@
                 </div>
                 <div class="ctrlSubgrp">
                     <p>
-                        <button type="button" class="" id="extract5" onclick="addExtract(-5)">Extr. &lt;-5</button>
+                        <button type="button" class="" id="extractm5" onclick="addExtract(-5)">Extr. &lt;-5</button>
                         <button type="button" class="" id="extract5" onclick="addExtract(5)">Extr. 5+&gt;</button>
                     </p>
                 </div>

@@ -27,15 +27,15 @@ if (isIE) {
             }
         };
     }(window.console));
-}
 
-//Then redefine the old console
-window.console = console;
+    //Then redefine the old console
+    window.console = console;
 
-window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-    // Log the error here -- perhaps using an AJAX call
-    console.error(errorMsg);
-    return true;
+    window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+        // Log the error here -- perhaps using an AJAX call
+        console.error(errorMsg);
+        return true;
+    }
 }
 
 function callAjax(url, callback){
@@ -75,6 +75,7 @@ betweenRedirect = false;
 registerQueue = [];
 ws = null;
 PLAYER_IFRAME_ID = "widget2";
+ACCEPTABLE_ORIGINS = ["http://localhost:8000", "https://www.youtube.com"]
 
 function imposeBoundaries(value, updateElement){
     document.getElementById('imposeboundries').value = value; 
@@ -289,6 +290,26 @@ function addExtract(offset) {
     }
 }
 
+function feedExtractChange(index) {
+    var oExtracts = document.getElementById("extracts");
+    var new_opt = oExtracts.options[index];
+
+    if(new_opt){
+        new_opt.selected = true;
+    } else {
+        console.warn("no option at index " + index, " resetting to first one")
+        oExtracts.options[0].selected = true;
+    }
+
+    if("createEvent" in document) {
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", false, true);
+        oExtracts.dispatchEvent(evt);
+    } else {
+        oExtracts.fireEvent("onchange");
+    }
+}
+
 // carry out seek based on selected extract option
 function feedCurrentExtract(e) {
     var oEvent = YAHOO.util.Event.getEvent(e),
@@ -300,6 +321,7 @@ function feedCurrentExtract(e) {
 
     proxySync('syncExtractsSelect', ["extracts", oSelect.selectedIndex]);
 
+    //only continue onchange
     if ((oSelect.options.length > 1) && (oEvent.type == "click")) {
         YAHOO.util.Event.stopEvent(oEvent);
         return;
@@ -1017,14 +1039,15 @@ window.onbeforeunload = function() {
     }
 };
 
-//TODO is this needed?
 window.addEventListener("message", function(event) {
-    if(event.origin !== "https://www.youtube.com"){
+    if(ACCEPTABLE_ORIGINS.indexOf(event.origin) == -1){ 
         return;
     }
     var data = JSON.parse(event.data);
     if(window[data.type]){
         data.args = data.args || [];
-        window[data.type](data.args);
+        // window[data.type](data.args);
+        //apply args to function
+        window[data.type].apply(null, data.args);
     }
 });

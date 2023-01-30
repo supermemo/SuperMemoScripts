@@ -1,5 +1,5 @@
 // Expose functions for syncing between SuperMemo YouTube windows
-// version: 1.0.1
+// version: 1.0.3
 X_URL_ICON = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0"
 FADED_X_URL_ICON = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0"
 
@@ -87,3 +87,51 @@ function registerProxyHandler(acceptedOrigins){
     });
 }
 
+function feedCurrentExtract(e){
+    e = e || undefined;
+    var extract = document.getElementById("yt-extracts") || document.getElementById("extracts");
+    callOn(window.parent, "feedExtractChange", [extract.selectedIndex]);
+}
+
+function removeCurrentExtract(){
+    callOn(window.parent, "removeCurrentExtract", []);
+}
+
+function addExtract(offset){
+    callOn(window.parent, "addExtract", [offset]);
+}
+
+function testExtract(){
+    callOn(window.parent, "testExtract", []);
+}
+
+function resetExtract(){
+    callOn(window.parent, "resetExtract", []);
+}
+
+function setAt(type, offset, sync){
+    callOn(window.parent, "setAt", [type, offset, sync]);
+}
+
+function resetAt(type){ 
+    callOn(window.parent, "resetAt", [type]);
+}
+
+function goTo(type){
+    callOn(window.parent, "goTo", [type]);
+}
+
+function resumeVideo(){
+    callOn(window.parent, "playPlayer", []);
+}
+
+function move(type, where) {
+    callOn(window.parent, "move", [type, where]);
+}
+
+//TODO do oynamically from function definitions
+//TODO complete all element methds
+
+function callOn(wdw, mcall, args){
+    wdw.postMessage(JSON.stringify({type: mcall, args: args}), "*");
+}   
