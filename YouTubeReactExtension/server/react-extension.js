@@ -1051,3 +1051,7 @@ window.addEventListener("message", function(event) {
         window[data.type].apply(null, data.args);
     }
 });
+
+window.addEventListener("load", function(event) {   
+    attachHandlers();
+});

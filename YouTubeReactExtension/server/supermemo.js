@@ -87,6 +87,8 @@ function registerProxyHandler(acceptedOrigins){
     });
 }
 
+// -----override methods to sync with parent window -----
+//TODO one method to rule them all
 function feedCurrentExtract(e){
     e = e || undefined;
     var extract = document.getElementById("yt-extracts") || document.getElementById("extracts");
@@ -135,3 +137,61 @@ function move(type, where) {
 function callOn(wdw, mcall, args){
     wdw.postMessage(JSON.stringify({type: mcall, args: args}), "*");
 }   
+
+elements = [
+    {id: "mark", onclick: function() {setAt('resume', 0, true);}},
+    {id: "resume", onclick: function() {goTo('resume');}},
+    {id: "resumevideoat", dblclick: function() {resetAt('resume');}, 
+    onfocus: function() {this.select();}, 
+    onchange: function() {this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));}, 
+    onclick: function() {setAt('resume', 0, true);}, onscroll: function() {console.log('scroll');}},
+    {id: "restoreResumeAt", onclick: function() {resetAt('resume');}},
+    {id: "start", onclick: function() {setAt('start', 0, true);}},
+    {id: "goToStart", onclick: function() {goTo('start');}},
+    {id: "startvideoat", dblclick: function() {resetAt('start');this.select();}, 
+    onfocus: function() {this.select();}, 
+    onchange: function() {this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));var that = this;imposeBoundaries(0, that);}, 
+    onclick: function() {setAt('start', 0, true);this.select();}},
+    {id: "restoreStartAt", onclick: function() {resetAt('start');}},
+    {id: "restoreStopAt", onclick: function() {resetAt('stop');}},
+    {id: "stopvideoat", dblclick: function() {resetAt('stop');}, 
+    onfocus: function() {this.select();}, 
+    onchange: function() {this.value = convertDuration2HHMMSS(convertHHMMSS2Duration(this.value));var that = this;imposeBoundaries(0, that);}, 
+    onclick: function() {setAt('stop', 0, true);this.select();}},
+    {id: "goToStop", onclick: function() {goTo('stop');}},
+    {id: "stop", onclick: function() {setAt('stop', 0, true);}},
+    {id: "test", onclick: function() {testExtract();}},
+    {id: "reset", onclick: function() {resetExtract();}},
+    {id: "extract", onclick: function() {addExtract(0);}},
+    {id: "extracts", onchange: function(){ feedCurrentExtract(); }, onclick: function(){ feedCurrentExtract(); }},
+    {id: "removeCurrentExtract", onclick: function(){ removeCurrentExtract(); }},
+    {id: "back", onclick: function(){ prevElement(); }},
+    {id: "learn", onclick: function(){ beginLearning(); }},
+    {id: "rep", onclick: function(){ nextRep(); }},
+    {id: "fwd", onclick: function(){ nextElement(); }},
+    {id: "dismiss", onclick: function(){ dismissElement(); }},
+    {id: "extractm5", onclick: function(){ addExtract(-5); }},
+    {id: "extract5", onclick: function(){ addExtract(5); }},
+    {id: "rewindResume", onclick: function(){ move('resume', 'rewind'); }},
+    {id: "rewindStart", onclick: function(){ move('start', 'rewind'); }},
+    {id: "rewindStop", onclick: function(){ move('stop', 'rewind'); }},
+    {id: "forwardResume", onclick: function(){ move('resume', 'forward'); }},
+    {id: "forwardStart", onclick: function(){ move('start', 'forward'); }},
+    {id: "forwardStop", onclick: function(){ move('stop', 'forward'); }}
+];
+
+function attachHandlers(prefix){
+    prefix = prefix || '';
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        var el = document.getElementById(prefix + element.id);
+        if (el) {
+            for (var key in element) {
+                if (key !== 'id') {
+                    el[key] = element[key];
+                }
+            }
+        }
+    }
+}
+
