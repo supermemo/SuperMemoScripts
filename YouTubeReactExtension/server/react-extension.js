@@ -72,7 +72,9 @@ RPC_PORT = "13000";
 WS_NAME = "jukebox";
 registered = false;
 betweenRedirect = false;
+iframeReady = false;
 registerQueue = [];
+iframeQueue = [];
 ws = null;
 PLAYER_IFRAME_ID = "widget2";
 ACCEPTABLE_ORIGINS = ["http://localhost:8000", "https://www.youtube.com"]
@@ -782,7 +784,7 @@ function proxyRPC(ctx, mcall, args){
     } 
 }
 
-//proxy function calls to the header window
+//proxy function calls to the header and iframe windows
 function proxySync(mcall, args){
     //IE detection
     if (window.document.documentMode){
@@ -792,7 +794,8 @@ function proxySync(mcall, args){
         return true;
     } else {
         setTimeout(syncIframe, 0, mcall, args);
-        if(ws.readyState == 1){
+        //TODO ws is not defined yet sync (?)
+        if(ws && ws.readyState == 1){
             if(registered){
                 //pop the queue and send the messages
                 while(registerQueue.length > 0){
@@ -807,7 +810,7 @@ function proxySync(mcall, args){
                 registerQueue.push({mcall:mcall, args:args});
             }
             return true;
-        } else if (ws.readyState == 0){
+        } else if (ws && ws.readyState == 0){
             //retry every 100ms until the websocket is open
             setTimeout(function(){ return proxySync(mcall, args)}, 100); 
         } else {
@@ -832,8 +835,29 @@ function syncIframe(mcall, args){
     if(iframe){
         let iframeWindow = iframe.contentWindow;
         if(iframeWindow){
-            iframeWindow.postMessage(JSON.stringify({type:mcall, args:args}), "*");
+            let message = JSON.stringify({type:mcall, args:args});
+            //behaviour mirrors websocket behaviour
+            if(!iframeReady){
+                console.log("queueing " + mcall);
+                iframeQueue.push(message);
+            } else {
+                let queueEmptied = false;
+                while(iframeQueue.length > 0){
+                    console.log("sending queued" + mcall);
+                    let element = iframeQueue.shift();
+                    iframeWindow.postMessage(element, "*");
+                    queueEmptied = true;
+                }
+                if(queueEmptied){
+                    //TODO callbacks, order is not guaranteed
+                    setTimeout(iframeWindow.postMessage(message, "*"), 100);
+                } else {
+                    iframeWindow.postMessage(message, "*");
+                }
+            }
         }
+    } else {
+        iframeQueue.push(JSON.stringify({type:mcall, args:args}));
     }
 }
 
@@ -1000,10 +1024,14 @@ function registerName(id){
 
 function loadPlayer(firstrun){
     console.log("player loaded")
+    //assume URL is authoritative
     document.getElementById("videoid").value = oUrlQuery.videoid;
-    document.getElementById("resumevideoat").value = oUrlQuery.resume;
+    document.getElementById("resumevideoat").value = oUrlQuery.resume;   
     document.getElementById("startvideoat").value = oUrlQuery.start;
     document.getElementById("stopvideoat").value = oUrlQuery.stop;
+    proxySync('syncElement', ["resumevideoat", oUrlQuery.resume]);
+    proxySync('syncElement', ["startvideoat", oUrlQuery.start]);
+    proxySync('syncElement', ["stopvideoat", oUrlQuery.stop]);
     
     //IE detection
     if(!window.document.documentMode && firstrun){
@@ -1039,6 +1067,11 @@ window.onbeforeunload = function() {
     }
 };
 
+function setIframeState(status){
+    console.log("iframe ready received: " + status);
+    iframeReady = status;
+}
+
 window.addEventListener("message", function(event) {
     if(ACCEPTABLE_ORIGINS.indexOf(event.origin) == -1){ 
         return;
@@ -1052,6 +1085,6 @@ window.addEventListener("message", function(event) {
     }
 });
 
-window.addEventListener("load", function(event) {   
+document.addEventListener("DOMContentLoaded", function(event) {
     attachHandlers();
 });

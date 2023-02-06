@@ -1,5 +1,5 @@
 // Expose functions for syncing between SuperMemo YouTube windows
-// version: 1.0.3
+// version: 1.1.0
 X_URL_ICON = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -112px 0"
 FADED_X_URL_ICON = "transparent url(http://localhost:8000/iv/images/icons.png) no-repeat -96px 0"
 
@@ -85,6 +85,11 @@ function registerProxyHandler(acceptedOrigins){
             proxyRPC(data.type, data.args);
         }
     });
+}
+
+function setIframeState(s){
+    console.log("sending iframe state: " + s);
+    callOn(window.parent, "setIframeState", [s]);
 }
 
 // -----override methods to sync with parent window -----
@@ -181,6 +186,7 @@ elements = [
 ];
 
 function attachHandlers(prefix){
+    console.log("attaching handlers");
     prefix = prefix || '';
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
@@ -195,3 +201,19 @@ function attachHandlers(prefix){
     }
 }
 
+function addToElement(id, handler){
+    var el = document.getElementById(id);
+    if (el) {
+        let descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
+        Object.defineProperty(el, 'value', {
+            get: function() {
+                return descriptor.get.apply(this);
+            },      
+            set: function(value) {
+                var res = descriptor.set.apply(this, arguments);
+                handler.call(this);
+                return res;
+            }
+        });
+    }
+}
