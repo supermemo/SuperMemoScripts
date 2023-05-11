@@ -177,6 +177,8 @@ elements = [
     {id: "dismiss", onclick: function(){ dismissElement(); }},
     {id: "extractm5", onclick: function(){ addExtract(-5); }},
     {id: "extract5", onclick: function(){ addExtract(5); }},
+    {id: "copyBtn", onclick: function(){ copyVideoDetails(); }},
+    {id: "screenshotBtn", onclick: function(){ screenshotVideo(); }},
     {id: "rewindResume", onclick: function(){ move('resume', 'rewind'); }},
     {id: "rewindStart", onclick: function(){ move('start', 'rewind'); }},
     {id: "rewindStop", onclick: function(){ move('stop', 'rewind'); }},

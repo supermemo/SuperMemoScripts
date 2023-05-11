@@ -897,6 +897,48 @@ function openEdge(){
     window.open('microsoft-edge' + ':' + document.location)
 }
 
+function copyVideoDetails(){
+    // noembed 
+    if(ytplayer){
+        var emb = "https://noembed.com/embed?url=" + ytplayer.props.url.replace("/v/", "/watch?v=")
+        console.log(emb);
+        // ie11 get the author_name and title
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", emb, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                // JSON.parse does not evaluate the attacker's scripts.
+                var resp = JSON.parse(xhr.responseText);
+                console.log(resp);
+
+                var title = resp.title;
+                var author = resp.author_name;
+                var duration = Math.round(ytplayer.getDuration());
+
+                // copf the video details to the clipboard, ie11
+                var text = title + " by " + author + " (" + duration + "s)";
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successful' : 'unsuccessful';
+                    console.log('Copying text command was ' + msg);
+                } catch (err) {
+                    console.log('Oops, unable to copy');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+        xhr.send();
+    }
+}
+
+function screenshotVideo(){
+}
+
 //TODO reuse WS
 function prevElement(){
     jrpc.notification('IElementWdwSvcBackButtonClick');
