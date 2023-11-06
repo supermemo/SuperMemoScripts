@@ -1,4 +1,10 @@
-# SuperMemoScripts
+# Project Archived! Please use: https://github.com/pattontim/supermemo.js
+
+---
+
+---
+
+---
 
 Compilation of scripts for [SuperMemo](www.supermemo.wiki), submitted by users of the community.
 
